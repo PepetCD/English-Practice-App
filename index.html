@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+  <title>English Practice</title>
+  <link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0f1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>English Practice – AI Powered</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;background:#0a0f1e;}
+body{
+  background:#0a0f1e;
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(232,93,4,.07) 0%,transparent 55%),
+                   radial-gradient(ellipse at 80% 80%,rgba(56,189,248,.05) 0%,transparent 55%);
+  background-attachment:fixed;
+  color:#e2e8f0;
+  font-family:'Georgia',serif;
+  padding:28px 16px 80px;
+  font-size:16px;
+}
+#app{max-width:820px;margin:0 auto;}
+
+/* ── FONTS ─────────────────────────────────────── */
+.mono{font-family:'DM Mono',monospace;}
+.serif{font-family:'Playfair Display',serif;}
+
+/* ── SCROLLBAR ──────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px;}
+
+/* ── CATEGORY NAV ───────────────────────────────── */
+.cat-nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.07);}
+.cat-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:9px 14px;border-radius:10px;
+  border:1.5px solid #1e293b;
+  background:rgba(255,255,255,.02);
+  color:#64748b;
+  font-family:'DM Mono',monospace;font-size:11px;
+  cursor:pointer;transition:all .18s;
+  white-space:nowrap;
+}
+.cat-btn.active{color:#f1f5f9;}
+.cat-btn:hover{color:#94a3b8;}
+
+/* ── PILL BAR ───────────────────────────────────── */
+.pill-bar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px;}
+.pill-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:7px 13px;border-radius:20px;
+  border:2px solid #334155;background:transparent;
+  color:#94a3b8;font-family:'DM Mono',monospace;font-size:11px;
+  cursor:pointer;transition:all .18s;
+}
+.pill-btn.active{color:#fff;}
+.dot-badge{width:6px;height:6px;border-radius:50%;flex-shrink:0;display:inline-block;}
+
+/* ── RULE CARD ──────────────────────────────────── */
+.rule-card{border-radius:14px;padding:18px 22px;margin-bottom:18px;}
+.rule-card strong{color:#fbbf24;}
+
+/* ── PROGRESS BOX ───────────────────────────────── */
+.progress-box{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:14px 18px;margin-bottom:22px;
+}
+.progress-track{background:rgba(255,255,255,.06);border-radius:999px;height:8px;overflow:hidden;margin-top:8px;}
+.progress-fill{height:100%;border-radius:999px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+.progress-dots{display:flex;gap:3px;margin-top:8px;flex-wrap:wrap;}
+.progress-dot{width:16px;height:4px;border-radius:2px;opacity:.7;}
+
+/* ── CONTROLS ───────────────────────────────────── */
+.controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.ctrl-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-ref-irr{
+  display:flex;align-items:center;gap:5px;padding:7px 13px;
+  background:rgba(232,93,4,.08);border:1px solid rgba(232,93,4,.22);
+  border-radius:20px;color:#e85d04;cursor:pointer;
+  font-size:11px;font-family:'DM Mono',monospace;transition:opacity .2s;
+}
+.btn-ref-phr{
+  display:flex;align-items:center;gap:5px;padding:7px 13px;
+  background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.22);
+  border-radius:20px;color:#a78bfa;cursor:pointer;
+  font-size:11px;font-family:'DM Mono',monospace;transition:opacity .2s;
+}
+.btn-new{
+  display:flex;align-items:center;gap:5px;padding:7px 14px;
+  background:transparent;border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;color:#94a3b8;cursor:pointer;
+  font-size:11px;font-family:'DM Mono',monospace;transition:all .2s;
+}
+.btn-new:disabled{color:#475569;cursor:not-allowed;background:rgba(255,255,255,.03);}
+button:hover:not(:disabled){opacity:.82;}
+
+/* ── EXERCISE CARD ──────────────────────────────── */
+.ex-card{
+  border-radius:12px;padding:15px 18px;margin-bottom:10px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);transition:all .3s;
+}
+.ex-card.correct{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.3);}
+.ex-card.wrong{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.3);}
+.ex-row{display:flex;align-items:center;flex-wrap:wrap;gap:7px;line-height:1.6;}
+.ex-num{color:#475569;font-family:'DM Mono',monospace;font-size:11px;min-width:20px;flex-shrink:0;}
+.ex-text{color:#e2e8f0;font-size:15px;}
+.ex-input{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:6px;padding:5px 11px;
+  color:#f1f5f9;font-size:14px;
+  font-family:'DM Mono',monospace;outline:none;
+  min-width:130px;max-width:100%;
+  transition:border-color .2s,box-shadow .2s;
+}
+.ex-input:focus{border-color:rgba(232,93,4,.5);box-shadow:0 0 0 2px rgba(232,93,4,.1);}
+.ex-input:disabled{opacity:.7;}
+.btn-check{
+  padding:5px 14px;background:#e85d04;border:none;
+  border-radius:6px;color:#fff;cursor:pointer;
+  font-size:12px;font-family:'DM Mono',monospace;
+  transition:opacity .2s;flex-shrink:0;
+}
+.ex-icon{font-size:18px;flex-shrink:0;}
+.ex-feedback{
+  background:rgba(239,68,68,.1);border-left:3px solid #ef4444;
+  padding:10px 14px;border-radius:4px;margin-top:10px;
+}
+.ex-feedback .f-answer{color:#fca5a5;font-size:13px;margin-bottom:4px;}
+.ex-feedback .f-hint{color:#94a3b8;font-size:13px;}
+.ex-success{color:#86efac;font-size:13px;margin-top:6px;}
+
+/* ── SKELETON LOADER ────────────────────────────── */
+.skeleton-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  border-radius:12px;padding:15px 18px;margin-bottom:10px;
+}
+.skel-line{
+  background:rgba(255,255,255,.07);border-radius:4px;
+  animation:pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:.7}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.spinning{animation:spin 1s linear infinite;display:inline-block;}
+
+/* ── ERROR BOX ──────────────────────────────────── */
+.error-box{
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);
+  border-radius:12px;padding:22px;text-align:center;margin-bottom:16px;
+}
+.btn-retry{
+  padding:9px 22px;background:#ef4444;border:none;
+  border-radius:8px;color:#fff;cursor:pointer;
+  font-size:13px;font-family:'DM Mono',monospace;margin-top:12px;
+}
+
+/* ── MODAL ──────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.78);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;padding:16px;backdrop-filter:blur(5px);
+}
+.modal-box{
+  background:#0d1528;border-radius:16px;
+  width:100%;max-width:700px;max-height:88vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 25px 60px rgba(0,0,0,.7);
+}
+.modal-header{padding:18px 22px 13px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;}
+.modal-search-row{padding:11px 22px;border-bottom:1px solid rgba(255,255,255,.05);}
+.modal-search{
+  width:100%;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  padding:8px 14px;color:#e2e8f0;font-size:13px;
+  font-family:'DM Mono',monospace;outline:none;
+}
+.modal-table-head{padding:8px 22px;display:grid;}
+.modal-body{overflow-y:auto;flex:1;}
+.modal-row{padding:9px 22px;display:grid;border-bottom:1px solid rgba(255,255,255,.03);}
+.modal-row:nth-child(even){background:rgba(255,255,255,.02);}
+.modal-footer{padding:9px 22px;border-top:1px solid rgba(255,255,255,.05);text-align:center;}
+.btn-close{
+  background:rgba(255,255,255,.06);border:none;border-radius:8px;
+  color:#94a3b8;cursor:pointer;font-size:16px;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+
+/* ── API KEY SETUP ──────────────────────────────── */
+.apikey-banner{
+  background:rgba(232,93,4,.12);border:1px solid rgba(232,93,4,.3);
+  border-radius:12px;padding:18px 20px;margin-bottom:22px;
+}
+.apikey-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.apikey-input{
+  flex:1;min-width:200px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.15);border-radius:8px;
+  padding:8px 12px;color:#f1f5f9;font-size:13px;
+  font-family:'DM Mono',monospace;outline:none;
+}
+.btn-save-key{
+  padding:8px 18px;background:#e85d04;border:none;
+  border-radius:8px;color:#fff;cursor:pointer;
+  font-size:12px;font-family:'DM Mono',monospace;
+  white-space:nowrap;
+}
+.btn-clear-key{
+  padding:8px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;color:#64748b;cursor:pointer;
+  font-size:12px;font-family:'DM Mono',monospace;
+}
+.key-ok{color:#86efac;font-size:12px;font-family:'DM Mono',monospace;margin-top:6px;}
+
+/* ── FOOTER HINT ────────────────────────────────── */
+.footer-hint{text-align:center;margin-top:32px;color:#1e293b;font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1px;}
+
+/* ── MOBILE OPTIMISATIONS ───────────────────────── */
+@media(max-width:600px){
+  body{padding:18px 12px 80px;}
+  .cat-btn{padding:7px 11px;font-size:10px;}
+  .ex-text{font-size:14px;}
+  .ex-input{min-width:110px;font-size:13px;}
+  .modal-row{font-size:12px;}
+  .controls{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div style="margin-bottom:26px;">
+    <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:5px;">
+      <h1 class="serif" style="font-size:clamp(24px,5vw,38px);color:#f1f5f9;font-weight:900;letter-spacing:-1px;">English Practice</h1>
+      <span class="mono" id="accent-badge" style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#e85d04;">AI-Powered</span>
+    </div>
+    <p class="mono" style="color:#64748b;font-size:12px;">Choose a category → exercises generated by AI every time ✨</p>
+  </div>
+
+  <!-- API KEY BANNER -->
+  <div class="apikey-banner" id="apikey-section">
+    <div class="mono" style="font-size:11px;color:#e85d04;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">🔑 Anthropic API Key Required</div>
+    <p style="color:#94a3b8;font-size:13px;line-height:1.6;">To generate AI exercises you need a free Anthropic API key. Get one at <a href="https://console.anthropic.com" target="_blank" style="color:#38bdf8;">console.anthropic.com</a>. Your key is saved locally in your browser — never sent anywhere except directly to Anthropic.</p>
+    <div class="apikey-row">
+      <input class="apikey-input" id="apikey-input" type="password" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
+      <button class="btn-save-key" onclick="saveApiKey()">Save key</button>
+      <button class="btn-clear-key" id="btn-clear-key" onclick="clearApiKey()" style="display:none">Clear</button>
+    </div>
+    <div class="key-ok" id="key-ok-msg" style="display:none">✅ Key saved — exercises will be generated by AI!</div>
+  </div>
+
+  <!-- CATEGORY NAV -->
+  <div class="cat-nav" id="cat-nav"></div>
+
+  <!-- PILL BAR -->
+  <div class="pill-bar" id="pill-bar" style="display:none;"></div>
+
+  <!-- RULE CARD -->
+  <div class="rule-card" id="rule-card"></div>
+
+  <!-- PROGRESS -->
+  <div class="progress-box" id="progress-box"></div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="mono" id="ex-count-label" style="font-size:11px;color:#64748b;letter-spacing:2px;text-transform:uppercase;"></span>
+      <span id="spin-icon" class="spinning" style="font-size:15px;display:none;">⚙️</span>
+    </div>
+    <div class="ctrl-btns">
+      <button class="btn-ref-irr" onclick="openModal('irregular')">📋 Irregular verbs</button>
+      <button class="btn-ref-phr" onclick="openModal('phrasal')">🔀 Phrasal verbs</button>
+      <button class="btn-new" id="btn-new" onclick="requestNewExercises()">✨ New AI exercises</button>
+    </div>
+  </div>
+
+  <!-- EXERCISES -->
+  <div id="exercises-container"></div>
+
+  <div class="footer-hint">Press Enter or click Check &nbsp;·&nbsp; ✨ AI generates fresh exercises every time</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" style="display:none;" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div style="display:flex;align-items:baseline;gap:10px;">
+        <span class="serif" id="modal-title" style="font-size:20px;color:#f1f5f9;font-weight:700;"></span>
+        <span class="mono" id="modal-count" style="font-size:10px;letter-spacing:2px;"></span>
+      </div>
+      <button class="btn-close" onclick="document.getElementById('modal').style.display='none'">✕</button>
+    </div>
+    <div class="modal-search-row">
+      <input class="modal-search" id="modal-search" placeholder="🔍  Search…" oninput="renderModalRows()" autocomplete="off">
+    </div>
+    <div class="modal-table-head" id="modal-head"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer mono" style="font-size:10px;color:#334155;">Tap outside to close</div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ══════════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════════
+const CATEGORIES=[
+  {id:"verbs",        label:"Verb Tenses",       icon:"📝",accent:"#e85d04"},
+  {id:"conjunctions", label:"Conjunctions",       icon:"🔗",accent:"#8b5cf6"},
+  {id:"possessive",   label:"Possessive Adj.",    icon:"👤",accent:"#ec4899"},
+  {id:"plurals",      label:"Plural Nouns",       icon:"📦",accent:"#f59e0b"},
+  {id:"prepositions", label:"Prepositions",       icon:"📍",accent:"#10b981"},
+  {id:"quantifiers",  label:"Quantifiers",        icon:"🔢",accent:"#06b6d4"},
+  {id:"say_tell",     label:"Say · Tell · Speak", icon:"💬",accent:"#f43f5e"},
+  {id:"do_does_did",  label:"Do / Does / Did",    icon:"❓",accent:"#3b82f6"},
+  {id:"gerund_inf",   label:"Gerund & Infinitive",icon:"🔄",accent:"#84cc16"},
+  {id:"conditionals", label:"Conditionals 0 & 1", icon:"⚡",accent:"#f97316"},
+  {id:"phrasal_verbs",label:"Phrasal Verbs",      icon:"🔀",accent:"#a78bfa"},
+];
+const TENSES=[
+  {id:"simple_present",       label:"Simple Present"},
+  {id:"present_continuous",   label:"Present Continuous"},
+  {id:"simple_past",          label:"Simple Past"},
+  {id:"past_continuous",      label:"Past Continuous"},
+  {id:"present_perfect",      label:"Present Perfect"},
+  {id:"present_perfect_cont", label:"Present Perfect Cont."},
+  {id:"past_perfect",         label:"Past Perfect"},
+  {id:"simple_future",        label:"Simple Future (will)"},
+  {id:"future_going_to",      label:"Future (going to)"},
+];
+const CONJ_TOPICS=[
+  {id:"coordinating", label:"Coordinating"},
+  {id:"subordinating",label:"Subordinating"},
+  {id:"correlative",  label:"Correlative"},
+  {id:"mixed_conj",   label:"Mixed Practice"},
+];
+const PHRASAL_TOPICS=[
+  {id:"pv_movement",     label:"Movement"},
+  {id:"pv_daily",        label:"Daily Life"},
+  {id:"pv_work",         label:"Work & Study"},
+  {id:"pv_relationships",label:"Relationships"},
+  {id:"pv_mixed",        label:"Mixed Practice"},
+];
+const IRREGULAR_VERBS=[
+  ["be","was/were","been","ser/estar"],["beat","beat","beaten","golpear"],
+  ["become","became","become","convertirse"],["begin","began","begun","empezar"],
+  ["break","broke","broken","romper"],["bring","brought","brought","traer"],
+  ["build","built","built","construir"],["buy","bought","bought","comprar"],
+  ["catch","caught","caught","atrapar"],["choose","chose","chosen","elegir"],
+  ["come","came","come","venir"],["cost","cost","cost","costar"],
+  ["cut","cut","cut","cortar"],["do","did","done","hacer"],
+  ["draw","drew","drawn","dibujar"],["drink","drank","drunk","beber"],
+  ["drive","drove","driven","conducir"],["eat","ate","eaten","comer"],
+  ["fall","fell","fallen","caer"],["feel","felt","felt","sentir"],
+  ["find","found","found","encontrar"],["fly","flew","flown","volar"],
+  ["forget","forgot","forgotten","olvidar"],["get","got","gotten","obtener"],
+  ["give","gave","given","dar"],["go","went","gone","ir"],
+  ["grow","grew","grown","crecer"],["have","had","had","tener"],
+  ["hear","heard","heard","oír"],["hide","hid","hidden","esconder"],
+  ["hit","hit","hit","golpear"],["hold","held","held","sostener"],
+  ["keep","kept","kept","mantener"],["know","knew","known","saber/conocer"],
+  ["leave","left","left","salir/dejar"],["lend","lent","lent","prestar"],
+  ["let","let","let","dejar/permitir"],["lose","lost","lost","perder"],
+  ["make","made","made","hacer/fabricar"],["mean","meant","meant","significar"],
+  ["meet","met","met","conocer/reunirse"],["pay","paid","paid","pagar"],
+  ["put","put","put","poner"],["read","read","read","leer"],
+  ["ride","rode","ridden","montar"],["run","ran","run","correr"],
+  ["say","said","said","decir"],["see","saw","seen","ver"],
+  ["sell","sold","sold","vender"],["send","sent","sent","enviar"],
+  ["set","set","set","establecer"],["show","showed","shown","mostrar"],
+  ["sing","sang","sung","cantar"],["sit","sat","sat","sentarse"],
+  ["sleep","slept","slept","dormir"],["speak","spoke","spoken","hablar"],
+  ["spend","spent","spent","gastar/pasar"],["stand","stood","stood","estar de pie"],
+  ["swim","swam","swum","nadar"],["take","took","taken","tomar/coger"],
+  ["teach","taught","taught","enseñar"],["tell","told","told","contar/decir"],
+  ["think","thought","thought","pensar"],["throw","threw","thrown","lanzar"],
+  ["understand","understood","understood","entender"],["wake","woke","woken","despertar"],
+  ["wear","wore","worn","llevar puesto"],["win","won","won","ganar"],
+  ["write","wrote","written","escribir"],
+];
+const PHRASAL_VERBS_LIST=[
+  ["break down","averiarse / derrumbarse","The car broke down on the motorway."],
+  ["bring up","mencionar / criar","She brought up an interesting point."],
+  ["call off","cancelar","They called off the meeting."],
+  ["carry on","continuar","Carry on with your work."],
+  ["catch up","ponerse al día","I need to catch up on emails."],
+  ["come across","encontrarse con / parecer","I came across an old photo."],
+  ["come up with","idear / proponer","She came up with a great plan."],
+  ["count on","contar con","You can count on me."],
+  ["deal with","tratar con / ocuparse de","How do you deal with stress?"],
+  ["fall out","pelearse","They fell out over money."],
+  ["figure out","descifrar / entender","Can you figure out this problem?"],
+  ["find out","descubrir / averiguar","I found out the truth."],
+  ["get along","llevarse bien","Do you get along with your boss?"],
+  ["get away","escaparse / irse de vacaciones","We need to get away for a weekend."],
+  ["get over","recuperarse de","It took months to get over the illness."],
+  ["give up","rendirse / dejar de","Don't give up now!"],
+  ["go ahead","proceder / adelante","Go ahead and start without me."],
+  ["go through","pasar por / revisar","She went through a difficult time."],
+  ["grow up","crecer / madurar","Where did you grow up?"],
+  ["hand in","entregar","Please hand in your essay tomorrow."],
+  ["hold on","esperar / agarrarse","Hold on, I'll be right back."],
+  ["keep up","mantener el ritmo","It's hard to keep up with the news."],
+  ["let down","decepcionar","Don't let me down this time."],
+  ["look after","cuidar de","She looks after her elderly parents."],
+  ["look forward to","esperar con ilusión","I'm looking forward to the holiday."],
+  ["look into","investigar","The police are looking into the case."],
+  ["look up","buscar (en libro/internet)","Look up the word in the dictionary."],
+  ["make up","reconciliarse / inventar","They made up after the argument."],
+  ["move on","seguir adelante","It's time to move on."],
+  ["pick up","recoger / aprender","Pick up the kids at 3."],
+  ["put off","aplazar / desanimar","Don't put off what you can do today."],
+  ["put up with","aguantar / tolerar","I can't put up with the noise."],
+  ["run into","encontrarse con alguien","I ran into my old teacher yesterday."],
+  ["run out of","quedarse sin","We've run out of milk."],
+  ["set off","partir / desencadenar","We set off early to beat the traffic."],
+  ["set up","establecer / montar","She set up her own company."],
+  ["show off","presumir","Stop showing off!"],
+  ["take off","quitarse / despegar","The plane takes off at noon."],
+  ["take on","asumir / contratar","The company is taking on new staff."],
+  ["take up","empezar (hobby)","She took up yoga last year."],
+  ["throw away","tirar / desechar","Throw away those old magazines."],
+  ["turn down","rechazar / bajar volumen","He turned down the job offer."],
+  ["turn out","resultar","It turned out to be a great day."],
+  ["turn up","aparecer / subir volumen","He didn't turn up to the meeting."],
+  ["work out","ejercitarse / resolver","I work out every morning."],
+];
+const EXPLANATIONS={
+  simple_present:"Use the Simple Present for <strong>habits, routines, facts, and general truths</strong>. Add <strong>-s/-es</strong> for he/she/it. Negative: don't/doesn't. Question: Do/Does?",
+  present_continuous:"Use Present Continuous for actions happening <strong>right now</strong> or temporary situations. Form: <strong>am/is/are + verb-ing</strong>.",
+  simple_past:"Use Simple Past for <strong>completed actions</strong> at a specific time in the past. Regular verbs: add <strong>-ed</strong>. Irregular verbs must be memorised (go→went, see→saw).",
+  past_continuous:"Use Past Continuous for actions <strong>in progress</strong> at a past moment, or when interrupted. Form: <strong>was/were + verb-ing</strong>.",
+  present_perfect:"Use Present Perfect for <strong>experiences, recent events, or unfinished situations</strong>. Form: <strong>have/has + past participle</strong>. Keywords: ever, never, already, yet, just, since, for.",
+  present_perfect_cont:"Use Present Perfect Continuous for <strong>ongoing actions that started in the past and continue now</strong>. Form: <strong>have/has been + verb-ing</strong>.",
+  past_perfect:"Use Past Perfect for an action completed <strong>before</strong> another past action. Form: <strong>had + past participle</strong>. Keywords: already, before, when, after, by the time.",
+  simple_future:"Use <strong>will</strong> for predictions, promises, spontaneous decisions, and offers. Form: <strong>will + base verb</strong>. Negative: won't.",
+  future_going_to:"Use <strong>going to</strong> for <strong>planned decisions</strong> and predictions <strong>based on evidence</strong>. Form: <strong>am/is/are + going to + base verb</strong>.",
+  coordinating:"<strong>Coordinating conjunctions</strong> (FANBOYS) join equal elements: <strong>For, And, Nor, But, Or, Yet, So</strong>. Use a comma before them joining two independent clauses.",
+  subordinating:"<strong>Subordinating conjunctions</strong> introduce a dependent clause: <strong>because, although, when, while, if, since, unless, until, after, before, as soon as, even though</strong>.",
+  correlative:"<strong>Correlative conjunctions</strong> work in <strong>pairs</strong>: <strong>both…and, either…or, neither…nor, not only…but also, whether…or</strong>. Connected elements must be grammatically parallel.",
+  mixed_conj:"<strong>Mixed Conjunctions Practice</strong> — choose the right conjunction: coordinating (FANBOYS), subordinating (because, although…), or correlative (both…and, either…or…).",
+  possessive:"<strong>Possessive adjectives</strong>: <strong>my, your, his, her, its, our, their</strong>. They come before a noun and agree with the <strong>owner</strong>, not the thing owned.",
+  plurals:"<strong>Plural Nouns</strong>: most add <strong>-s</strong>. Endings -s/-sh/-ch/-x/-z → <strong>-es</strong>. Consonant+y → <strong>-ies</strong>. Some are <strong>irregular</strong> (child→children, tooth→teeth).",
+  prepositions:"<strong>Prepositions</strong> of <strong>time</strong> (at/on/in), <strong>place</strong> (at/on/in/under/between), and <strong>movement</strong> (to/into/across/along/over).",
+  quantifiers:"<strong>Quantifiers</strong>: <strong>many/few</strong> (countable), <strong>much/little</strong> (uncountable), <strong>a lot of</strong> (both), <strong>some/any</strong> (affirmative/negative/questions), <strong>most/all/no</strong>.",
+  say_tell:"<strong>Say</strong> = express words (no person object). <strong>Tell</strong> = inform someone (needs person object). <strong>Speak</strong> = use a language or talk formally.",
+  do_does_did:"Use <strong>do</strong> (I/you/we/they) and <strong>does</strong> (he/she/it) for present questions/negatives. Use <strong>did</strong> for all past questions/negatives. Always followed by the <strong>base form</strong>.",
+  gerund_inf:"<strong>Gerund (-ing)</strong>: after enjoy/avoid/finish/keep/mind + prepositions. <strong>Infinitive (to+verb)</strong>: after want/decide/plan/hope/agree/refuse/manage.",
+  conditionals:"<strong>Zero Conditional</strong>: general truths → If + Present, Present. <strong>First Conditional</strong>: real future → If + Present, <strong>will</strong> + base verb.",
+  pv_movement:"<strong>Phrasal verbs of movement</strong>: <strong>come back, get on/off, get in/out, go back, set off, turn around, run away</strong>.",
+  pv_daily:"<strong>Daily life phrasal verbs</strong>: <strong>wake up, get up, put on, take off, turn on/off, pick up, throw away, run out of, look for, tidy up, find out</strong>.",
+  pv_work:"<strong>Work & study phrasal verbs</strong>: <strong>hand in, give up, carry on, catch up, look up, work out, set up, take on, figure out, come up with</strong>.",
+  pv_relationships:"<strong>Relationship phrasal verbs</strong>: <strong>get along with, fall out with, make up, break up, ask out, look after, grow up, cheer up, let down, count on</strong>.",
+  pv_mixed:"<strong>Mixed Phrasal Verbs</strong> — a variety of common phrasal verbs from all categories. Focus on understanding meaning from context.",
+};
+const TOPIC_DESCRIPTIONS={
+  simple_present:"Simple Present tense (habits, routines, general truths). Use -s/-es for he/she/it. Include positives, negatives (don't/doesn't), and questions (Do/Does).",
+  present_continuous:"Present Continuous tense (actions happening now or temporary). Form: am/is/are + verb-ing. Include positives, negatives, and questions.",
+  simple_past:"Simple Past tense (completed actions in the past). Mix regular (-ed) and irregular verbs. Include positives, negatives (didn't), and questions (Did).",
+  past_continuous:"Past Continuous tense (actions in progress at a past moment). Form: was/were + verb-ing. Include positives, negatives, and questions.",
+  present_perfect:"Present Perfect tense. Form: have/has + past participle. Use keywords: ever, never, already, yet, just, since, for.",
+  present_perfect_cont:"Present Perfect Continuous tense. Form: have/has been + verb-ing. Use keywords: for, since, all day, lately, recently.",
+  past_perfect:"Past Perfect tense (action before another past action). Form: had + past participle. Keywords: already, before, when, after, by the time.",
+  simple_future:"Simple Future with WILL (predictions, promises, spontaneous decisions). Form: will + base verb. Include positives, negatives (won't), questions.",
+  future_going_to:"Future with GOING TO (plans and evidence-based predictions). Form: am/is/are + going to + base verb.",
+  coordinating:"Coordinating conjunctions (FANBOYS): for, and, nor, but, or, yet, so. Sentences where the student fills in the correct one.",
+  subordinating:"Subordinating conjunctions: because, although, when, while, if, since, unless, until, after, before, as soon as, even though.",
+  correlative:"Correlative conjunctions in pairs: both…and, either…or, neither…nor, not only…but also, whether…or.",
+  mixed_conj:"Mixed conjunctions: coordinating, subordinating and correlative.",
+  possessive:"Possessive adjectives: my, your, his, her, its, our, their.",
+  plurals:"Plural nouns: regular, -es, -ies, -ves, and irregular. Format: 'One ___, two ___.'",
+  prepositions:"Prepositions of time (at/on/in), place (at/on/in/under/between/next to), and movement (to/into/across/along/over).",
+  quantifiers:"Quantifiers: many/few (countable), much/little (uncountable), a lot of, some/any, most/all/no.",
+  say_tell:"Say vs Tell vs Speak. Say = no person object. Tell = needs person object. Speak = language ability or formal talk.",
+  do_does_did:"Do/Does/Did as auxiliaries for questions and negatives in Present Simple and Past Simple.",
+  gerund_inf:"Gerund (-ing) vs Infinitive (to+verb). After specific verbs: enjoy/avoid/finish (gerund); want/decide/plan (infinitive); after prepositions (gerund).",
+  conditionals:"Zero Conditional (general truths) and First Conditional (real future with will).",
+  pv_movement:"Phrasal verbs of movement: come back, get on/off, get in/out, go back, set off, turn around, run away.",
+  pv_daily:"Phrasal verbs for daily life: wake up, get up, put on, take off, turn on/off, pick up, throw away, run out of, look for, tidy up, find out.",
+  pv_work:"Phrasal verbs for work/study: hand in, give up, carry on, catch up, look up, work out, set up, take on, figure out, come up with.",
+  pv_relationships:"Phrasal verbs for relationships: get along with, fall out with, make up, break up, ask out, look after, grow up, cheer up, let down, count on.",
+  pv_mixed:"Mixed phrasal verbs from all contexts.",
+};
+
+// ══════════════════════════════════════════════════
+//  APP STATE
+// ══════════════════════════════════════════════════
+let state={
+  category:"verbs", tense:"simple_present",
+  conjTopic:"coordinating", phrasalTopic:"pv_daily",
+  exercises:[], loading:false, error:null,
+  stats:{}, genKey:0, modalType:null,
+};
+let usedSentences={};
+
+function getTopicId(){
+  if(state.category==="verbs") return state.tense;
+  if(state.category==="conjunctions") return state.conjTopic;
+  if(state.category==="phrasal_verbs") return state.phrasalTopic;
+  return state.category;
+}
+function getAccent(){return (CATEGORIES.find(c=>c.id===state.category)||{accent:"#e85d04"}).accent;}
+function getTopicLabel(){
+  if(state.category==="verbs") return (TENSES.find(t=>t.id===state.tense)||{}).label;
+  if(state.category==="conjunctions") return (CONJ_TOPICS.find(t=>t.id===state.conjTopic)||{}).label;
+  if(state.category==="phrasal_verbs") return (PHRASAL_TOPICS.find(t=>t.id===state.phrasalTopic)||{}).label;
+  return (CATEGORIES.find(c=>c.id===state.category)||{}).label;
+}
+
+// ══════════════════════════════════════════════════
+//  API KEY MANAGEMENT
+// ══════════════════════════════════════════════════
+function getApiKey(){return localStorage.getItem('ep_apikey')||'';}
+function saveApiKey(){
+  const v=document.getElementById('apikey-input').value.trim();
+  if(!v){alert('Please enter your API key.');return;}
+  localStorage.setItem('ep_apikey',v);
+  refreshKeyUI();
+  requestNewExercises();
+}
+function clearApiKey(){
+  localStorage.removeItem('ep_apikey');
+  document.getElementById('apikey-input').value='';
+  refreshKeyUI();
+}
+function refreshKeyUI(){
+  const key=getApiKey();
+  const input=document.getElementById('apikey-input');
+  const okMsg=document.getElementById('key-ok-msg');
+  const clearBtn=document.getElementById('btn-clear-key');
+  if(key){
+    input.value=key;
+    input.style.opacity='0.5';
+    okMsg.style.display='block';
+    clearBtn.style.display='inline-flex';
+  } else {
+    input.value='';
+    input.style.opacity='1';
+    okMsg.style.display='none';
+    clearBtn.style.display='none';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  AI EXERCISE GENERATION
+// ══════════════════════════════════════════════════
+let currentFetch=null;
+
+async function generateExercises(topicId){
+  const apiKey=getApiKey();
+  if(!apiKey) throw new Error('NO_KEY');
+
+  const prev=(usedSentences[topicId]||[]).slice(-20);
+  const avoidStr=prev.length>0?`\n\nIMPORTANT: Do NOT reuse any of these sentence beginnings: ${prev.join(' | ')}`:'';
+
+  const topic=TOPIC_DESCRIPTIONS[topicId]||'English grammar exercises';
+
+  const prompt=`You are an English language teacher creating fill-in-the-blank exercises for a Spanish speaker learning English.
+
+Topic: ${topic}
+
+Generate exactly 8 fresh, varied fill-in-the-blank exercises.
+
+STRICT JSON FORMAT — respond with ONLY this JSON, no explanation, no markdown, no code fences:
+{
+  "exercises": [
+    {
+      "sentence": "She ___ (go) to school every day.",
+      "answer": "goes",
+      "hint": "3rd person singular → add -s."
+    }
+  ]
+}
+
+Rules:
+- Each sentence must have exactly ONE blank marked as ___
+- The answer must be the complete correct form to fill the blank
+- The hint must explain the grammar rule clearly and concisely
+- Use varied subjects (I, you, he, she, we, they, it, names, nouns)
+- Use everyday, realistic situations (food, travel, work, family, hobbies)
+- Mix positive sentences, negatives, and questions
+- Hints may reference Spanish equivalents where helpful
+- Vary difficulty (easy to medium-hard)
+- Be creative — use different verbs and contexts every time${avoidStr}`;
+
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1000,
+      messages:[{role:'user',content:prompt}],
+    }),
+  });
+
+  if(!resp.ok){
+    const err=await resp.json().catch(()=>({}));
+    throw new Error(err.error?.message||`API error ${resp.status}`);
+  }
+  const data=await resp.json();
+  const text=data.content.map(b=>b.text||'').join('').trim();
+  const cleaned=text.replace(/```json|```/gi,'').trim();
+  const parsed=JSON.parse(cleaned);
+  if(!parsed.exercises||!Array.isArray(parsed.exercises)) throw new Error('Invalid response');
+
+  const exs=parsed.exercises.map(ex=>({
+    sentence:ex.sentence||'',answer:ex.answer||'',hint:ex.hint||'',
+  }));
+  // Record used sentences
+  const newS=exs.map(e=>e.sentence.split(' ').slice(0,5).join(' '));
+  usedSentences[topicId]=[...(usedSentences[topicId]||[]),...newS].slice(-40);
+  return exs;
+}
+
+function requestNewExercises(){
+  if(state.loading) return;
+  if(!getApiKey()){
+    document.getElementById('apikey-input').focus();
+    document.getElementById('apikey-section').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  state.genKey++;
+  state.loading=true;
+  state.error=null;
+  state.exercises=[];
+  renderAll();
+
+  const tid=getTopicId();
+  generateExercises(tid)
+    .then(exs=>{
+      state.exercises=exs;
+      state.loading=false;
+      renderAll();
+    })
+    .catch(err=>{
+      state.loading=false;
+      if(err.message==='NO_KEY'){
+        state.error='Please enter your Anthropic API key above to generate exercises.';
+      } else {
+        state.error='Could not generate exercises: '+err.message+'. Please try again.';
+      }
+      renderAll();
+    });
+}
+
+// ══════════════════════════════════════════════════
+//  ANSWER CHECK
+// ══════════════════════════════════════════════════
+function normalize(s){return s.trim().toLowerCase().replace(/\s+/g,' ');}
+function checkAnswer(user,correct){
+  const u=normalize(user),c=normalize(correct);
+  if(u===c) return true;
+  const alts={"don't":"do not","doesn't":"does not","didn't":"did not","haven't":"have not","hasn't":"has not","hadn't":"had not","aren't":"are not","isn't":"is not","wasn't":"was not","weren't":"were not","won't":"will not","can't":"cannot"};
+  const ex=s=>{let r=s;Object.entries(alts).forEach(([k,v])=>r=r.replaceAll(k,v));return r;};
+  return ex(u)===ex(c)||ex(u)===c||u===ex(c);
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ══════════════════════════════════════════════════
+function renderAll(){
+  const accent=getAccent();
+  // accent badge
+  document.getElementById('accent-badge').style.color=accent;
+
+  // category nav
+  document.getElementById('cat-nav').innerHTML=CATEGORIES.map(cat=>{
+    const a=cat.id===state.category;
+    return `<button class="cat-btn${a?' active':''}" onclick="selectCategory('${cat.id}')"
+      style="border-color:${a?cat.accent:'#1e293b'};background:${a?cat.accent+'22':'rgba(255,255,255,.02)'};">
+      <span style="font-size:14px">${cat.icon}</span>${cat.label}</button>`;
+  }).join('');
+
+  // pill bar
+  const pillEl=document.getElementById('pill-bar');
+  let pillItems=null;
+  if(state.category==='verbs') pillItems=TENSES;
+  else if(state.category==='conjunctions') pillItems=CONJ_TOPICS;
+  else if(state.category==='phrasal_verbs') pillItems=PHRASAL_TOPICS;
+
+  if(pillItems){
+    pillEl.style.display='flex';
+    pillEl.innerHTML=pillItems.map(t=>{
+      const tid=t.id;
+      const isActive=(state.category==='verbs'?state.tense:state.category==='conjunctions'?state.conjTopic:state.phrasalTopic)===tid;
+      const s=state.stats[tid]||{correct:0,total:0};
+      const pct=s.total===0?null:Math.round(s.correct/s.total*100);
+      const dotColor=pct===null?null:pct>=80?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
+      return `<button class="pill-btn${isActive?' active':''}" onclick="selectSubTopic('${tid}')"
+        style="border-color:${isActive?accent:'#334155'};background:${isActive?accent:'transparent'};color:${isActive?'#fff':'#94a3b8'};">
+        ${t.label}${dotColor?`<span class="dot-badge" style="background:${dotColor}"></span>`:''}
+      </button>`;
+    }).join('');
+  } else {
+    pillEl.style.display='none';
+    pillEl.innerHTML='';
+  }
+
+  // rule card
+  const topicId=getTopicId();
+  const expl=EXPLANATIONS[topicId]||'';
+  document.getElementById('rule-card').style.cssText=`background:${accent}14;border:1px solid ${accent}33;border-radius:14px;padding:18px 22px;margin-bottom:18px;`;
+  document.getElementById('rule-card').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:8px;flex-wrap:wrap;">
+      <span class="mono" style="font-size:10px;color:${accent};letter-spacing:3px;text-transform:uppercase;">The Rule</span>
+      <span class="serif" style="font-size:17px;color:#f8fafc;font-weight:700;">${getTopicLabel()}</span>
+    </div>
+    <p style="color:#cbd5e1;font-size:14px;line-height:1.7;">${expl}</p>`;
+
+  // progress
+  renderProgress(topicId);
+
+  // controls
+  const label=document.getElementById('ex-count-label');
+  const spin=document.getElementById('spin-icon');
+  const btnNew=document.getElementById('btn-new');
+  if(state.loading){
+    label.textContent='Generating…';
+    spin.style.display='inline-block';
+    btnNew.disabled=true;
+    btnNew.textContent='⏳ Generating…';
+  } else {
+    label.textContent=`Exercises · ${state.exercises.length}`;
+    spin.style.display='none';
+    btnNew.disabled=false;
+    btnNew.textContent='✨ New AI exercises';
+  }
+
+  // exercises
+  renderExercises();
+}
+
+function renderProgress(topicId){
+  const s=state.stats[topicId]||{correct:0,total:0};
+  const pct=s.total===0?0:Math.round(s.correct/s.total*100);
+  const color=pct>=80?'#22c55e':pct>=50?'#f59e0b':pct>0?'#ef4444':'#1e293b';
+  const label=pct>=80?'Excellent! 🏆':pct>=50?'Good progress 👍':pct>0?'Keep practicing 💪':'Not started yet';
+  const dots=s.total>0?`<div class="progress-dots">${Array.from({length:s.total}).map((_,i)=>`<div class="progress-dot" style="background:${i<s.correct?'#22c55e':'#ef4444'}"></div>`).join('')}</div>`:'';
+  document.getElementById('progress-box').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="mono" style="font-size:10px;color:#64748b;letter-spacing:2px;text-transform:uppercase;">Your Progress</span>
+        <span class="mono" style="font-size:11px;color:${color}">${label}</span>
+      </div>
+      <span class="mono" style="font-size:12px;color:${pct>0?color:'#334155'}">${s.correct}/${s.total} · <strong>${pct}%</strong></span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${pct>0?`linear-gradient(90deg,${color},${color}99)`:'transparent'};${pct>0?`box-shadow:0 0 10px ${color}55`:''}"></div></div>
+    ${dots}`;
+}
+
+// Track submitted answers in memory (resets on new generation)
+let submittedAnswers={};
+
+function renderExercises(){
+  const c=document.getElementById('exercises-container');
+  if(state.loading){
+    c.innerHTML=Array.from({length:8}).map((_,i)=>`
+      <div class="skeleton-card">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="skel-line" style="width:20px;height:14px;animation-delay:${i*0.08}s"></div>
+          <div class="skel-line" style="width:${50+(i*19)%35}%;height:14px;animation-delay:${i*0.08+0.04}s"></div>
+          <div class="skel-line" style="width:110px;height:28px;border-radius:6px;animation-delay:${i*0.08+0.08}s"></div>
+        </div>
+      </div>`).join('');
+    return;
+  }
+  if(state.error){
+    c.innerHTML=`<div class="error-box">
+      <div style="color:#fca5a5;font-size:14px;">${state.error}</div>
+      <button class="btn-retry" onclick="requestNewExercises()">Try again</button>
+    </div>`;
+    return;
+  }
+  if(!state.exercises.length){
+    c.innerHTML='';
+    return;
+  }
+  submittedAnswers={};
+  c.innerHTML=state.exercises.map((ex,i)=>buildExerciseHTML(ex,i)).join('');
+}
+
+function buildExerciseHTML(ex,i,submitted,correct){
+  const parts=ex.sentence.split('___');
+  const statusClass=submitted===undefined?'':(correct?'correct':'wrong');
+  const inputDisabled=submitted!==undefined?'disabled':'';
+  const btnOrIcon=submitted===undefined
+    ?`<button class="btn-check" onclick="submitExercise(${i})">Check</button>`
+    :`<span class="ex-icon">${correct?'✅':'❌'}</span>`;
+  const feedback=submitted!==undefined&&!correct?`
+    <div class="ex-feedback">
+      <div class="f-answer">✏️ Correct answer: <strong style="color:#fde68a">${esc(ex.answer)}</strong></div>
+      <div class="f-hint">💡 ${esc(ex.hint)}</div>
+    </div>`:
+    submitted!==undefined&&correct?`<div class="ex-success">✨ Perfect! Well done.</div>`:'';
+  const savedVal=submittedAnswers[i]?.value||'';
+  return `<div class="ex-card${statusClass?' '+statusClass:''}" id="ex-card-${i}">
+    <div class="ex-row">
+      <span class="ex-num">${i+1}.</span>
+      <span class="ex-text">${esc(parts[0])}</span>
+      <input class="ex-input" id="ex-inp-${i}" value="${esc(savedVal)}" ${inputDisabled}
+        placeholder="type here…"
+        onkeydown="if(event.key==='Enter') submitExercise(${i})">
+      ${parts[1]?`<span class="ex-text">${esc(parts[1])}</span>`:''}
+      ${btnOrIcon}
+    </div>
+    ${feedback}
+  </div>`;
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function submitExercise(i){
+  const input=document.getElementById('ex-inp-'+i);
+  if(!input||!input.value.trim()) return;
+  if(submittedAnswers[i]!==undefined) return;
+  const val=input.value;
+  const ex=state.exercises[i];
+  const ok=checkAnswer(val,ex.answer);
+  submittedAnswers[i]={value:val,correct:ok};
+
+  // Update stats
+  const tid=getTopicId();
+  const cur=state.stats[tid]||{correct:0,total:0};
+  state.stats[tid]={correct:cur.correct+(ok?1:0),total:cur.total+1};
+
+  // Re-render this card in place
+  const card=document.getElementById('ex-card-'+i);
+  if(card) card.outerHTML=buildExerciseHTML(ex,i,true,ok);
+
+  renderProgress(tid);
+  // Refresh pill dots
+  const pillEl=document.getElementById('pill-bar');
+  if(pillEl.style.display!=='none'){
+    // just update dots — re-render pills
+    const accent=getAccent();
+    let pillItems=state.category==='verbs'?TENSES:state.category==='conjunctions'?CONJ_TOPICS:PHRASAL_TOPICS;
+    pillEl.innerHTML=pillItems.map(t=>{
+      const isActive=(state.category==='verbs'?state.tense:state.category==='conjunctions'?state.conjTopic:state.phrasalTopic)===t.id;
+      const s=state.stats[t.id]||{correct:0,total:0};
+      const pct=s.total===0?null:Math.round(s.correct/s.total*100);
+      const dotColor=pct===null?null:pct>=80?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
+      return `<button class="pill-btn${isActive?' active':''}" onclick="selectSubTopic('${t.id}')"
+        style="border-color:${isActive?accent:'#334155'};background:${isActive?accent:'transparent'};color:${isActive?'#fff':'#94a3b8'};">
+        ${t.label}${dotColor?`<span class="dot-badge" style="background:${dotColor}"></span>`:''}
+      </button>`;
+    }).join('');
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════
+function selectCategory(id){
+  state.category=id;
+  renderAll();
+  requestNewExercises();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function selectSubTopic(id){
+  if(state.category==='verbs') state.tense=id;
+  else if(state.category==='conjunctions') state.conjTopic=id;
+  else if(state.category==='phrasal_verbs') state.phrasalTopic=id;
+  renderAll();
+  requestNewExercises();
+}
+
+// ══════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════
+let currentModalType=null;
+function openModal(type){
+  currentModalType=type;
+  const isIrr=type==='irregular';
+  document.getElementById('modal-title').textContent=isIrr?'Irregular Verbs':'Phrasal Verbs';
+  document.getElementById('modal-title').style.color='#f1f5f9';
+  document.getElementById('modal-count').style.color=isIrr?'#e85d04':'#a78bfa';
+  document.getElementById('modal').style.borderColor=isIrr?'rgba(232,93,4,.35)':'rgba(139,92,246,.35)';
+  document.getElementById('modal').querySelector('.modal-box').style.border=`1px solid ${isIrr?'rgba(232,93,4,.35)':'rgba(139,92,246,.35)'}`;
+  document.getElementById('modal-search').value='';
+  if(isIrr){
+    document.getElementById('modal-head').style.cssText=`display:grid;grid-template-columns:1fr 1fr 1.3fr 1.3fr;padding:8px 22px;background:rgba(232,93,4,.08);border-bottom:1px solid rgba(232,93,4,.15);`;
+    document.getElementById('modal-head').innerHTML=['Verb','Past','Past Participle','Spanish'].map(h=>`<span class="mono" style="font-size:10px;color:#e85d04;letter-spacing:2px;text-transform:uppercase;">${h}</span>`).join('');
+  } else {
+    document.getElementById('modal-head').style.cssText=`display:grid;grid-template-columns:1fr 1.2fr 2fr;padding:8px 22px;background:rgba(139,92,246,.08);border-bottom:1px solid rgba(139,92,246,.15);`;
+    document.getElementById('modal-head').innerHTML=['Phrasal Verb','Meaning (ES)','Example'].map(h=>`<span class="mono" style="font-size:10px;color:#a78bfa;letter-spacing:2px;text-transform:uppercase;">${h}</span>`).join('');
+  }
+  document.getElementById('modal').style.display='flex';
+  renderModalRows();
+  setTimeout(()=>document.getElementById('modal-search').focus(),120);
+}
+function closeModal(e){if(e.target===document.getElementById('modal')) document.getElementById('modal').style.display='none';}
+function renderModalRows(){
+  const q=(document.getElementById('modal-search').value||'').toLowerCase();
+  const isIrr=currentModalType==='irregular';
+  const list=isIrr?IRREGULAR_VERBS:PHRASAL_VERBS_LIST;
+  const filtered=list.filter(v=>v.some(c=>String(c).toLowerCase().includes(q)));
+  document.getElementById('modal-count').textContent=filtered.length+' entries';
+  const cols=isIrr?'1fr 1fr 1.3fr 1.3fr':'1fr 1.2fr 2fr';
+  document.getElementById('modal-body').innerHTML=filtered.length===0
+    ?`<div style="padding:24px;text-align:center;color:#475569;font-family:'DM Mono',monospace;font-size:13px;">No results found.</div>`
+    :filtered.map((v,i)=>`
+      <div class="modal-row" style="grid-template-columns:${cols};">
+        <span style="color:${isIrr?'#fbbf24':'#a78bfa'};font-family:'DM Mono',monospace;font-size:13px;font-weight:500;">${esc(v[0])}</span>
+        <span style="color:#94a3b8;font-family:'DM Mono',monospace;font-size:12px;">${esc(v[1])}</span>
+        <span style="color:#e2e8f0;font-family:'DM Mono',monospace;font-size:12px;">${esc(v[2])}</span>
+        ${isIrr?`<span style="color:#64748b;font-family:'DM Mono',monospace;font-size:12px;">${esc(v[3])}</span>`:''}
+      </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+refreshKeyUI();
+renderAll();
+if(getApiKey()) requestNewExercises();
+</script>
+</body>
+</html>
