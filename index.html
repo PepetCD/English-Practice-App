@@ -264,6 +264,7 @@ button:hover:not(:disabled){opacity:.82;}
       <input class="apikey-input" id="apikey-input" type="password" placeholder="sk-ant-…" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') saveApiKey()">
       <button class="btn-save-key" onclick="saveApiKey()">Save &amp; go ✓</button>
       <button class="btn-clear-key" id="btn-clear-key" onclick="clearApiKey()" style="display:none">Clear key</button>
+      <button class="btn-clear-key" onclick="testApiKey()" title="Send a tiny test request to verify the key works">🧪 Test key</button>
     </div>
   </div>
 
@@ -586,10 +587,29 @@ function refreshKeyUI(){
 // ══════════════════════════════════════════════════
 //  AI EXERCISE GENERATION
 // ══════════════════════════════════════════════════
-// NOTE ON ANDROID: Direct calls to api.anthropic.com work fine from
-// hosted pages (https://). If you open the file locally (file://),
-// Android Chrome may block CORS. Host the file on any free service
-// (Netlify, GitHub Pages, etc.) and it will work on all devices.
+async function callAnthropicAPI(apiKey, body){
+  let resp;
+  try {
+    resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify(body),
+    });
+  } catch(netErr) {
+    throw new Error('NETWORK: ' + netErr.message);
+  }
+  if(!resp.ok){
+    let errMsg = `HTTP ${resp.status}`;
+    try { const j = await resp.json(); errMsg = j.error?.message || errMsg; } catch(e){}
+    throw new Error(`API_${resp.status}: ${errMsg}`);
+  }
+  return resp.json();
+}
 
 async function generateExercises(topicId){
   const apiKey=getApiKey();
@@ -627,39 +647,12 @@ Rules:
 - Vary difficulty (easy to medium-hard)
 - Be creative — use different verbs and contexts every time${avoidStr}`;
 
-  let resp;
-  try {
-    resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    });
-  } catch(networkErr) {
-    // Network/CORS failure
-    throw new Error(
-      'Network error reaching Anthropic API. Check your internet connection and that your API key is correct. ' +
-      'If you just saved the key, try clicking "New AI exercises" again.'
-    );
-  }
+  const data = await callAnthropicAPI(apiKey, {
+    model: 'claude-haiku-4-5-20251001',  // fast + cheap model, works perfectly for exercises
+    max_tokens: 1000,
+    messages: [{ role: 'user', content: prompt }],
+  });
 
-  if(!resp.ok){
-    const errBody=await resp.json().catch(()=>({}));
-    const msg=errBody.error?.message||`HTTP ${resp.status}`;
-    if(resp.status===401) throw new Error('Invalid API key. Please check and re-enter it.');
-    if(resp.status===429) throw new Error('Rate limit reached. Please wait a moment and try again.');
-    throw new Error(msg);
-  }
-
-  const data=await resp.json();
   const text=data.content.map(b=>b.text||'').join('').trim();
   const cleaned=text.replace(/```json|```/gi,'').trim();
   const parsed=JSON.parse(cleaned);
@@ -671,6 +664,25 @@ Rules:
   const newS=exs.map(e=>e.sentence.split(' ').slice(0,5).join(' '));
   usedSentences[topicId]=[...(usedSentences[topicId]||[]),...newS].slice(-40);
   return exs;
+}
+
+// Quick test you can call from browser console: testApiKey()
+async function testApiKey(){
+  const key=getApiKey();
+  if(!key){ console.error('No key saved'); return; }
+  console.log('Testing key...');
+  try {
+    const d = await callAnthropicAPI(key,{
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:10,
+      messages:[{role:'user',content:'Say: OK'}]
+    });
+    console.log('✅ Key works! Response:', d.content[0]?.text);
+    alert('✅ API key works! Exercises should generate now.');
+  } catch(e){
+    console.error('❌ Key test failed:', e.message);
+    alert('❌ Key test failed: ' + e.message);
+  }
 }
 
 function requestNewExercises(){
@@ -698,7 +710,8 @@ function requestNewExercises(){
       if(err.message==='NO_KEY'){
         state.error='Please enter your Anthropic API key above to generate exercises.';
       } else {
-        state.error='Could not generate exercises: '+err.message+'. Please try again.';
+        // Show the raw error so we can diagnose it
+        state.error=`Error: ${err.message}`;
       }
       renderAll();
     });
@@ -827,7 +840,10 @@ function renderExercises(){
   }
   if(state.error){
     c.innerHTML=`<div class="error-box">
-      <div style="color:#fca5a5;font-size:14px;line-height:1.6;">${state.error}</div>
+      <div style="color:#fca5a5;font-size:13px;line-height:1.7;font-family:'DM Mono',monospace;word-break:break-word;">${state.error}</div>
+      <div style="margin-top:10px;font-size:11px;color:#64748b;font-family:'DM Mono',monospace;">
+        💡 Tip: click <strong style="color:#94a3b8">🧪 Test key</strong> in the banner above to check your key is valid.
+      </div>
       <button class="btn-retry" onclick="requestNewExercises()">Try again</button>
     </div>`;
     return;
