@@ -31,20 +31,37 @@ body{
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px;}
 
-/* ── CATEGORY NAV ───────────────────────────────── */
-.cat-nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.07);}
-.cat-btn{
-  display:flex;align-items:center;gap:6px;
-  padding:9px 14px;border-radius:10px;
-  border:1.5px solid #1e293b;
-  background:rgba(255,255,255,.02);
-  color:#64748b;
-  font-family:'DM Mono',monospace;font-size:11px;
-  cursor:pointer;transition:all .18s;
-  white-space:nowrap;
+/* ── CATEGORY DROPDOWN ──────────────────────────── */
+.cat-dropdown-wrap{position:relative;margin-bottom:20px;}
+.cat-select-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;width:100%;max-width:360px;
+  padding:10px 16px;border-radius:12px;
+  border:1.5px solid #334155;background:rgba(255,255,255,.04);
+  color:#f1f5f9;font-family:'DM Mono',monospace;font-size:12px;
+  cursor:pointer;transition:all .18s;user-select:none;
 }
-.cat-btn.active{color:#f1f5f9;}
-.cat-btn:hover{color:#94a3b8;}
+.cat-select-btn:hover{border-color:#475569;background:rgba(255,255,255,.07);}
+.cat-select-btn .cat-left{display:flex;align-items:center;gap:8px;}
+.cat-select-btn .cat-arrow{color:#64748b;font-size:10px;transition:transform .2s;}
+.cat-select-btn.open .cat-arrow{transform:rotate(180deg);}
+.cat-menu{
+  position:absolute;top:calc(100% + 6px);left:0;
+  width:100%;max-width:360px;
+  background:#0d1a2e;border:1px solid #1e293b;border-radius:12px;padding:6px;
+  box-shadow:0 12px 40px rgba(0,0,0,.6);z-index:200;
+  display:none;flex-direction:column;gap:2px;max-height:70vh;overflow-y:auto;
+}
+.cat-menu.open{display:flex;}
+.cat-menu-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;
+  color:#94a3b8;font-family:'DM Mono',monospace;font-size:11px;
+  cursor:pointer;transition:all .15s;border:none;background:transparent;text-align:left;width:100%;
+}
+.cat-menu-item:hover{background:rgba(255,255,255,.06);color:#e2e8f0;}
+.cat-menu-item.active{color:#fff;}
+.cat-menu-item .cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.cat-menu-sep{height:1px;background:rgba(255,255,255,.06);margin:4px 0;}
 
 /* ── PILL BAR ───────────────────────────────────── */
 .pill-bar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px;}
@@ -268,8 +285,17 @@ button:hover:not(:disabled){opacity:.82;}
     </div>
   </div>
 
-  <!-- CATEGORY NAV -->
-  <div class="cat-nav" id="cat-nav"></div>
+  <!-- CATEGORY DROPDOWN -->
+  <div class="cat-dropdown-wrap" id="cat-dropdown-wrap">
+    <button class="cat-select-btn" id="cat-select-btn" onclick="toggleCatMenu()">
+      <span class="cat-left">
+        <span id="cat-sel-icon" style="font-size:15px">📝</span>
+        <span id="cat-sel-label" class="mono" style="font-size:12px">Verb Tenses</span>
+      </span>
+      <span class="cat-arrow">▼</span>
+    </button>
+    <div class="cat-menu" id="cat-menu"></div>
+  </div>
 
   <!-- PILL BAR -->
   <div class="pill-bar" id="pill-bar" style="display:none;"></div>
@@ -323,20 +349,30 @@ button:hover:not(:disabled){opacity:.82;}
 // ══════════════════════════════════════════════════
 //  DATA
 // ══════════════════════════════════════════════════
+// Categories grouped for the dropdown menu
 const CATEGORIES=[
-  {id:"verbs",        label:"Verb Tenses",       icon:"📝",accent:"#e85d04"},
-  {id:"conjunctions", label:"Conjunctions",       icon:"🔗",accent:"#8b5cf6"},
-  {id:"possessive",   label:"Possessive Adj.",    icon:"👤",accent:"#ec4899"},
-  {id:"plurals",      label:"Plural Nouns",       icon:"📦",accent:"#f59e0b"},
-  {id:"prepositions", label:"Prepositions",       icon:"📍",accent:"#10b981"},
-  {id:"quantifiers",  label:"Quantifiers",        icon:"🔢",accent:"#06b6d4"},
-  {id:"say_tell",     label:"Say · Tell · Speak", icon:"💬",accent:"#f43f5e"},
-  {id:"do_does_did",  label:"Do / Does / Did",    icon:"❓",accent:"#3b82f6"},
-  {id:"gerund_inf",   label:"Gerund & Infinitive",icon:"🔄",accent:"#84cc16"},
-  {id:"conditionals", label:"Conditionals 0 & 1", icon:"⚡",accent:"#f97316"},
-  {id:"phrasal_verbs",label:"Phrasal Verbs",      icon:"🔀",accent:"#a78bfa"},
+  // ── Verb Tenses ──
+  {id:"verbs",          label:"Verb Tenses",              icon:"📝",accent:"#e85d04",  group:null},
+  // ── Grammar Topics (all grammar in one group) ──
+  {id:"conjunctions",   label:"Conjunctions",             icon:"🔗",accent:"#8b5cf6",  group:"Grammar Topics"},
+  {id:"possessive",     label:"Possessive Adjectives",    icon:"👤",accent:"#ec4899",  group:null},
+  {id:"plurals",        label:"Plural Nouns",             icon:"📦",accent:"#f59e0b",  group:null},
+  {id:"prepositions",   label:"Prepositions",             icon:"📍",accent:"#10b981",  group:null},
+  {id:"quantifiers",    label:"Quantifiers",              icon:"🔢",accent:"#06b6d4",  group:null},
+  {id:"say_tell",       label:"Say · Tell · Speak",       icon:"💬",accent:"#f43f5e",  group:null},
+  {id:"do_does_did",    label:"Do / Does / Did",          icon:"❓",accent:"#3b82f6",  group:null},
+  {id:"gerund_inf",     label:"Gerund & Infinitive",      icon:"🔄",accent:"#84cc16",  group:null},
+  {id:"used_to",        label:"Used to (Past Habits)",    icon:"🕰️",accent:"#f59e0b",  group:null},
+  {id:"comparatives",   label:"Comparatives & Superlatives",icon:"📊",accent:"#10b981",group:null},
+  {id:"modals",         label:"Should / Must / Might",    icon:"💭",accent:"#8b5cf6",  group:null},
+  {id:"advice_oblig",   label:"Advice vs Obligation",     icon:"⚠️",accent:"#f43f5e",  group:null},
+  {id:"conditionals",   label:"First & Zero Conditionals",icon:"⚡",accent:"#f97316",  group:null},
+  {id:"rel_clauses",    label:"Defining Relative Clauses",icon:"🔍",accent:"#06b6d4",  group:null},
+  // ── Phrasal Verbs ──
+  {id:"phrasal_verbs",  label:"Phrasal Verbs",            icon:"🔀",accent:"#a78bfa",  group:"Phrasal Verbs"},
 ];
 const TENSES=[
+  // ── Individual tenses ──
   {id:"simple_present",       label:"Simple Present"},
   {id:"present_continuous",   label:"Present Continuous"},
   {id:"simple_past",          label:"Simple Past"},
@@ -346,6 +382,11 @@ const TENSES=[
   {id:"past_perfect",         label:"Past Perfect"},
   {id:"simple_future",        label:"Simple Future (will)"},
   {id:"future_going_to",      label:"Future (going to)"},
+  // ── Contrast topics ──
+  {id:"pp_vs_ps",             label:"Perf. vs Past Simple ⚖️"},
+  {id:"ps_vs_pc",             label:"Simple vs Continuous ⚖️"},
+  {id:"pp_vs_ppc",            label:"Perf. vs Perf. Cont. ⚖️"},
+  {id:"pc_vs_pss",            label:"Past Cont. vs Simple ⚖️"},
 ];
 const CONJ_TOPICS=[
   {id:"coordinating", label:"Coordinating"},
@@ -471,6 +512,18 @@ const EXPLANATIONS={
   pv_work:"<strong>Work & study phrasal verbs</strong>: <strong>hand in, give up, carry on, catch up, look up, work out, set up, take on, figure out, come up with</strong>.",
   pv_relationships:"<strong>Relationship phrasal verbs</strong>: <strong>get along with, fall out with, make up, break up, ask out, look after, grow up, cheer up, let down, count on</strong>.",
   pv_mixed:"<strong>Mixed Phrasal Verbs</strong> — a variety of common phrasal verbs from all categories. Focus on understanding meaning from context.",
+  // ── Verb Contrasts ──
+  pp_vs_ps:"<strong>Present Perfect vs Past Simple</strong>. Use <strong>Present Perfect</strong> (have/has + p.p.) for unfinished time periods, life experiences, recent events. Use <strong>Past Simple</strong> for completed actions at a specific past time. Key: 'I have lived here for 3 years' vs 'I lived in Paris in 2010'.",
+  ps_vs_pc:"<strong>Present Simple vs Present Continuous</strong>. Use <strong>Present Simple</strong> for habits, routines, and general truths. Use <strong>Present Continuous</strong> (am/is/are + -ing) for actions happening right now or temporary situations. Key: 'She works in a bank' vs 'She is working from home this week'.",
+  pp_vs_ppc:"<strong>Present Perfect vs Present Perfect Continuous</strong>. Use <strong>Present Perfect</strong> (have/has + p.p.) for completed actions with present relevance. Use <strong>Present Perfect Continuous</strong> (have/has been + -ing) to emphasise duration or an ongoing activity. Key: 'I have read the book' vs 'I have been reading all day'.",
+  pc_vs_pss:"<strong>Past Continuous vs Past Simple</strong>. Use <strong>Past Continuous</strong> (was/were + -ing) for an action in progress when another action interrupted it. Use <strong>Past Simple</strong> for the interrupting action or a completed sequence. Key: 'I was cooking when she called' — cooking=continuous, called=simple.",
+  // ── New Grammar Topics ──
+  used_to:"<strong>Used to</strong> describes past habits or states that no longer exist. Form: <strong>used to + base verb</strong>. Negative: <strong>didn't use to</strong>. Question: <strong>Did you use to…?</strong> Example: 'I used to play football every day (but I don't now)'.",
+  comparatives:"<strong>Comparatives</strong>: adjective + <strong>-er</strong> or <strong>more</strong> + adjective + <strong>than</strong>. <strong>Superlatives</strong>: <strong>the</strong> + adjective + <strong>-est</strong> or <strong>the most</strong> + adjective. Short adjectives: fast→faster→fastest. Long: interesting→more interesting→most interesting.",
+  modals:"<strong>Should</strong> = advice/recommendation. <strong>Must</strong> = strong obligation or logical deduction. <strong>Might</strong> = possibility (maybe). All followed by <strong>base verb</strong>. 'You should see a doctor.' / 'You must wear a seatbelt.' / 'It might rain later.'",
+  advice_oblig:"<strong>Advice vs Obligation</strong>: <strong>should/ought to</strong> = advice (softer). <strong>must/have to</strong> = obligation. <strong>must</strong> = personal obligation (internal). <strong>have to</strong> = external rule. <strong>mustn't</strong> = prohibition. <strong>don't have to</strong> = no obligation (not prohibition!).",
+  conditionals:"<strong>Zero Conditional</strong>: general truths → If + Present Simple, Present Simple. <strong>First Conditional</strong>: real future → If + Present Simple, <strong>will</strong> + base verb. Key difference: Zero = always true ('If you heat ice, it melts'). First = likely future ('If it rains, I will stay home').",
+  rel_clauses:"<strong>Defining Relative Clauses</strong> identify which person/thing we mean — no commas! Use <strong>who</strong> for people, <strong>which</strong> for things, <strong>that</strong> for both, <strong>where</strong> for places, <strong>whose</strong> for possession. Example: 'The man <strong>who</strong> lives next door is a doctor.'",
 };
 const TOPIC_DESCRIPTIONS={
   simple_present:"Simple Present tense (habits, routines, general truths). Use -s/-es for he/she/it. Include positives, negatives (don't/doesn't), and questions (Do/Does).",
@@ -499,6 +552,18 @@ const TOPIC_DESCRIPTIONS={
   pv_work:"Phrasal verbs for work/study: hand in, give up, carry on, catch up, look up, work out, set up, take on, figure out, come up with.",
   pv_relationships:"Phrasal verbs for relationships: get along with, fall out with, make up, break up, ask out, look after, grow up, cheer up, let down, count on.",
   pv_mixed:"Mixed phrasal verbs from all contexts.",
+  // ── Verb Contrasts ──
+  pp_vs_ps:"Present Perfect vs Past Simple contrast exercises. Each exercise requires the student to choose or fill in either Present Perfect (have/has + past participle) or Past Simple. Include time expressions as clues: 'yesterday/last year/in 2010' → Past Simple; 'ever/never/already/yet/since/for/just/recently' → Present Perfect. Make about half the exercises each tense.",
+  ps_vs_pc:"Present Simple vs Present Continuous contrast exercises. Each exercise requires choosing or filling in either Present Simple (habits/facts) or Present Continuous (am/is/are + -ing, actions happening now or temporary). Include context clues: 'every day/always/usually' → Simple; 'right now/at the moment/this week/currently' → Continuous.",
+  pp_vs_ppc:"Present Perfect vs Present Perfect Continuous contrast. Each exercise requires choosing between Present Perfect (have/has + p.p., completed with present relevance) and Present Perfect Continuous (have/has been + -ing, ongoing activity with emphasis on duration). Include time expressions: 'three times/twice' → Perfect; 'all day/for hours/since morning' → Continuous.",
+  pc_vs_pss:"Past Continuous vs Past Simple contrast exercises. Each exercise requires choosing or filling in either Past Continuous (was/were + -ing, action in progress) or Past Simple (completed action). Typical patterns: 'was/were doing X when Y happened', 'while I was doing X, she did Y', or sequential completed actions in Past Simple.",
+  // ── New Grammar Topics ──
+  used_to:"'Used to' for past habits and states that no longer exist. Form: used to + base verb. Negative: didn't use to + base verb. Questions: Did + subject + use to + base verb? Include exercises with both affirmative (I used to play...), negative (I didn't use to like...), and question (Did you use to...?) forms.",
+  comparatives:"Comparatives and superlatives. Short adjectives (1-2 syllables): add -er/-est (fast→faster→fastest, big→bigger→biggest). Long adjectives (3+ syllables): more/most + adjective. Irregular: good→better→best, bad→worse→worst, far→further→furthest. Include 'than' in comparatives, 'the' before superlatives.",
+  modals:"Should, must, and might exercises. Should = advice/recommendation. Must = strong obligation or logical certainty. Might = possibility (around 50% chance). All followed by base verb (no -s, no -ed). Include negative forms: shouldn't, mustn't (prohibition), might not. Mix contexts: health advice, rules, predictions.",
+  advice_oblig:"Advice vs obligation nuance: should/ought to (advice), must (personal strong obligation), have to (external obligation/rule), don't have to (no obligation — NOT prohibition!), mustn't (prohibition). Include exercises where the nuance matters: e.g. rules at work vs personal recommendations vs things forbidden.",
+  conditionals:"First and Zero Conditional contrast exercises. Zero Conditional: If + Present Simple, Present Simple (always true, scientific facts, general rules). First Conditional: If + Present Simple, will + base verb (real, likely future situation). Students must fill in the correct verb form in the result clause or the if-clause.",
+  rel_clauses:"Defining relative clauses (no commas). Who = for people. Which = for things/animals. That = for people or things. Where = for places. Whose = possession. When = for times. The clause identifies WHICH person/thing/place is meant. Students fill in the correct relative pronoun or complete the relative clause.",
 };
 
 // ══════════════════════════════════════════════════
@@ -513,16 +578,16 @@ let state={
 let usedSentences={};
 
 function getTopicId(){
-  if(state.category==="verbs") return state.tense;
   if(state.category==="conjunctions") return state.conjTopic;
   if(state.category==="phrasal_verbs") return state.phrasalTopic;
+  if(state.category==="verbs") return state.tense; // includes contrast tense ids
   return state.category;
 }
 function getAccent(){return (CATEGORIES.find(c=>c.id===state.category)||{accent:"#e85d04"}).accent;}
 function getTopicLabel(){
-  if(state.category==="verbs") return (TENSES.find(t=>t.id===state.tense)||{}).label;
   if(state.category==="conjunctions") return (CONJ_TOPICS.find(t=>t.id===state.conjTopic)||{}).label;
   if(state.category==="phrasal_verbs") return (PHRASAL_TOPICS.find(t=>t.id===state.phrasalTopic)||{}).label;
+  if(state.category==="verbs") return (TENSES.find(t=>t.id===state.tense)||{}).label;
   return (CATEGORIES.find(c=>c.id===state.category)||{}).label;
 }
 
@@ -737,17 +802,34 @@ function renderAll(){
   // accent badge
   document.getElementById('accent-badge').style.color=accent;
 
-  // category nav
-  document.getElementById('cat-nav').innerHTML=CATEGORIES.map(cat=>{
-    const a=cat.id===state.category;
-    return `<button class="cat-btn${a?' active':''}" onclick="selectCategory('${cat.id}')"
-      style="border-color:${a?cat.accent:'#1e293b'};background:${a?cat.accent+'22':'rgba(255,255,255,.02)'};">
-      <span style="font-size:14px">${cat.icon}</span>${cat.label}</button>`;
-  }).join('');
+  // ── dropdown button ──
+  const cat=CATEGORIES.find(c=>c.id===state.category)||CATEGORIES[0];
+  document.getElementById('cat-sel-icon').textContent=cat.icon;
+  document.getElementById('cat-sel-label').textContent=cat.label;
+  const btn=document.getElementById('cat-select-btn');
+  btn.style.borderColor=accent;
+  btn.style.background=accent+'22';
+
+  // ── dropdown menu items ──
+  let menuHTML='';
+  CATEGORIES.forEach(c=>{
+    if(c.group){
+      menuHTML+=`<div class="cat-menu-sep"></div>
+        <div style="padding:4px 12px 2px;font-size:9px;color:#475569;font-family:'DM Mono',monospace;letter-spacing:2px;text-transform:uppercase;">${c.group}</div>`;
+    }
+    const isActive=c.id===state.category;
+    menuHTML+=`<button class="cat-menu-item${isActive?' active':''}" onclick="selectCategory('${c.id}')"
+      style="${isActive?`background:${c.accent}22;color:#fff;`:''}">
+      <span class="cat-dot" style="background:${isActive?c.accent:'#334155'}"></span>
+      <span style="font-size:13px">${c.icon}</span>${c.label}
+    </button>`;
+  });
+  document.getElementById('cat-menu').innerHTML=menuHTML;
 
   // pill bar
   const pillEl=document.getElementById('pill-bar');
   let pillItems=null;
+  // "verbs" category shows the tense pill bar (including contrast topics)
   if(state.category==='verbs') pillItems=TENSES;
   else if(state.category==='conjunctions') pillItems=CONJ_TOPICS;
   else if(state.category==='phrasal_verbs') pillItems=PHRASAL_TOPICS;
@@ -929,6 +1011,9 @@ function submitExercise(i){
 // ══════════════════════════════════════════════════
 function selectCategory(id){
   state.category=id;
+  // Close the dropdown
+  document.getElementById('cat-menu').classList.remove('open');
+  document.getElementById('cat-select-btn').classList.remove('open');
   renderAll();
   requestNewExercises();
   window.scrollTo({top:0,behavior:'smooth'});
@@ -940,6 +1025,21 @@ function selectSubTopic(id){
   renderAll();
   requestNewExercises();
 }
+
+// ── Dropdown toggle + close on outside click ──
+function toggleCatMenu(){
+  const menu=document.getElementById('cat-menu');
+  const btn=document.getElementById('cat-select-btn');
+  const open=menu.classList.toggle('open');
+  btn.classList.toggle('open',open);
+}
+document.addEventListener('click',function(e){
+  const wrap=document.getElementById('cat-dropdown-wrap');
+  if(wrap && !wrap.contains(e.target)){
+    document.getElementById('cat-menu').classList.remove('open');
+    document.getElementById('cat-select-btn').classList.remove('open');
+  }
+});
 
 // ══════════════════════════════════════════════════
 //  MODAL
