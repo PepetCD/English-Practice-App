@@ -635,7 +635,7 @@ Rules:
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
-        'anthropic-beta': 'direct-browser-access-1',   // required for browser direct access
+        'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
@@ -644,11 +644,10 @@ Rules:
       }),
     });
   } catch(networkErr) {
-    // CORS / network failure — likely file:// on Android
+    // Network/CORS failure
     throw new Error(
-      'Network error. Make sure the app is hosted on a web server (https://). ' +
-      'Opening as a local file on Android blocks API calls. ' +
-      'Upload to Netlify or GitHub Pages for free.'
+      'Network error reaching Anthropic API. Check your internet connection and that your API key is correct. ' +
+      'If you just saved the key, try clicking "New AI exercises" again.'
     );
   }
 
@@ -827,14 +826,8 @@ function renderExercises(){
     return;
   }
   if(state.error){
-    const isHostingError=state.error.includes('Network error');
     c.innerHTML=`<div class="error-box">
       <div style="color:#fca5a5;font-size:14px;line-height:1.6;">${state.error}</div>
-      ${isHostingError?`<div style="margin-top:12px;padding:10px 14px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);border-radius:8px;color:#7dd3fc;font-size:12px;font-family:'DM Mono',monospace;line-height:1.7;">
-        <strong>Quick fix:</strong> Upload <code>index.html</code> to
-        <a href="https://app.netlify.com/drop" target="_blank" style="color:#38bdf8;">Netlify Drop</a>
-        (drag &amp; drop, free, takes 10 seconds) — then open that URL on Android. ✅
-      </div>`:''}
       <button class="btn-retry" onclick="requestNewExercises()">Try again</button>
     </div>`;
     return;
