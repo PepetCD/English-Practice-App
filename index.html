@@ -63,16 +63,37 @@ body{
 .cat-menu-item .cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .cat-menu-sep{height:1px;background:rgba(255,255,255,.06);margin:4px 0;}
 
-/* ── PILL BAR ───────────────────────────────────── */
-.pill-bar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px;}
-.pill-btn{
-  display:flex;align-items:center;gap:5px;
-  padding:7px 13px;border-radius:20px;
-  border:2px solid #334155;background:transparent;
-  color:#94a3b8;font-family:'DM Mono',monospace;font-size:11px;
-  cursor:pointer;transition:all .18s;
+/* ── SUB-TOPIC DROPDOWN ─────────────────────────── */
+.sub-dropdown-wrap{position:relative;margin-bottom:20px;}
+.sub-select-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;width:100%;max-width:360px;
+  padding:9px 16px;border-radius:12px;
+  border:1.5px solid #334155;background:rgba(255,255,255,.03);
+  color:#e2e8f0;font-family:'DM Mono',monospace;font-size:11px;
+  cursor:pointer;transition:all .18s;user-select:none;
 }
-.pill-btn.active{color:#fff;}
+.sub-select-btn:hover{border-color:#475569;background:rgba(255,255,255,.06);}
+.sub-select-btn .sub-arrow{color:#64748b;font-size:10px;transition:transform .2s;}
+.sub-select-btn.open .sub-arrow{transform:rotate(180deg);}
+.sub-menu{
+  position:absolute;top:calc(100% + 5px);left:0;
+  width:100%;max-width:360px;
+  background:#0d1a2e;border:1px solid #1e293b;border-radius:12px;padding:6px;
+  box-shadow:0 12px 40px rgba(0,0,0,.6);z-index:199;
+  display:none;flex-direction:column;gap:2px;max-height:60vh;overflow-y:auto;
+}
+.sub-menu.open{display:flex;}
+.sub-menu-item{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;padding:8px 12px;border-radius:8px;
+  color:#94a3b8;font-family:'DM Mono',monospace;font-size:11px;
+  cursor:pointer;transition:all .15s;border:none;background:transparent;text-align:left;width:100%;
+}
+.sub-menu-item:hover{background:rgba(255,255,255,.06);color:#e2e8f0;}
+.sub-menu-item.active{color:#fff;}
+.sub-menu-sep{height:1px;background:rgba(255,255,255,.06);margin:4px 0;}
+.sub-pct-badge{font-family:'DM Mono',monospace;font-size:10px;padding:1px 6px;border-radius:4px;flex-shrink:0;}
 .dot-badge{width:6px;height:6px;border-radius:50%;flex-shrink:0;display:inline-block;}
 
 /* ── RULE CARD ──────────────────────────────────── */
@@ -243,6 +264,148 @@ button:hover:not(:disabled){opacity:.82;}
 }
 .key-status-pill:hover{opacity:.75;}
 
+/* ── GLOBAL STATS DASHBOARD ─────────────────────── */
+.stats-dashboard{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:18px 22px;margin-bottom:22px;
+  cursor:pointer;transition:border-color .2s;
+}
+.stats-dashboard:hover{border-color:rgba(255,255,255,.15);}
+.stats-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.stats-numbers{display:flex;gap:22px;flex-wrap:wrap;}
+.stat-block{display:flex;flex-direction:column;gap:2px;}
+.stat-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;line-height:1;}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:9px;color:#475569;letter-spacing:2px;text-transform:uppercase;}
+.stats-ring-wrap{display:flex;align-items:center;gap:12px;}
+.stats-expand-hint{font-family:'DM Mono',monospace;font-size:10px;color:#334155;margin-top:10px;text-align:right;}
+/* Per-topic breakdown (collapsible) */
+.stats-breakdown{margin-top:16px;display:none;}
+.stats-breakdown.open{display:block;}
+.breakdown-row{
+  display:grid;grid-template-columns:1fr auto auto;
+  align-items:center;gap:10px;
+  padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);
+}
+.breakdown-row:last-child{border-bottom:none;}
+.breakdown-label{font-family:'DM Mono',monospace;font-size:11px;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.breakdown-bar-wrap{width:90px;height:5px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;}
+.breakdown-bar{height:100%;border-radius:999px;transition:width .5s ease;}
+.breakdown-pct{font-family:'DM Mono',monospace;font-size:11px;min-width:34px;text-align:right;}
+.stats-reset-btn{
+  margin-top:14px;padding:6px 14px;
+  background:transparent;border:1px solid rgba(239,68,68,.3);
+  border-radius:8px;color:#ef4444;cursor:pointer;
+  font-size:11px;font-family:'DM Mono',monospace;
+  transition:all .2s;
+}
+.stats-reset-btn:hover{background:rgba(239,68,68,.1);}
+
+/* ── CHALLENGE BUTTON ───────────────────────────── */
+.btn-challenge{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:20px;
+  border:1px solid rgba(250,204,21,.35);
+  background:rgba(250,204,21,.06);
+  color:#fbbf24;
+  font-family:'DM Mono',monospace;font-size:11px;
+  cursor:pointer;transition:all .2s;
+  white-space:nowrap;user-select:none;
+  flex-shrink:0;
+}
+.btn-challenge:hover{background:rgba(250,204,21,.12);border-color:rgba(250,204,21,.6);}
+.btn-challenge:disabled{opacity:.45;cursor:not-allowed;}
+.btn-challenge .ch-star{font-size:14px;}
+
+/* ── CHALLENGE OVERLAY ──────────────────────────── */
+.challenge-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.82);
+  display:flex;align-items:flex-start;justify-content:center;
+  z-index:500;padding:24px 16px 60px;
+  overflow-y:auto;backdrop-filter:blur(4px);
+}
+.challenge-box{
+  background:#0d1528;border:1px solid rgba(250,204,21,.25);
+  border-radius:18px;width:100%;max-width:760px;
+  box-shadow:0 28px 70px rgba(0,0,0,.7);
+  overflow:hidden;
+}
+.challenge-header{
+  padding:22px 26px 16px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+}
+.challenge-title{font-family:'Playfair Display',serif;font-size:22px;color:#f1f5f9;font-weight:700;}
+.challenge-subtitle{font-family:'DM Mono',monospace;font-size:11px;color:#64748b;margin-top:4px;letter-spacing:.5px;}
+.challenge-close{
+  background:rgba(255,255,255,.06);border:none;border-radius:8px;
+  color:#94a3b8;cursor:pointer;font-size:15px;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.challenge-body{padding:22px 26px;}
+/* The passage text with inline blanks */
+.challenge-passage{
+  font-size:16px;line-height:2.4;color:#cbd5e1;
+  font-family:'Georgia',serif;
+}
+.ch-input{
+  display:inline-block;
+  background:rgba(255,255,255,.06);
+  border:none;border-bottom:2px solid rgba(255,255,255,.25);
+  border-radius:0;
+  padding:1px 8px;
+  color:#f1f5f9;font-size:15px;
+  font-family:'DM Mono',monospace;outline:none;
+  width:130px;
+  transition:border-color .2s;
+  vertical-align:baseline;
+  position:relative;top:-1px;
+}
+.ch-input:focus{border-bottom-color:#fbbf24;}
+.ch-input.ch-correct{border-bottom-color:#22c55e;color:#86efac;background:rgba(34,197,94,.08);}
+.ch-input.ch-wrong{border-bottom-color:#ef4444;color:#fca5a5;background:rgba(239,68,68,.08);}
+.ch-input:disabled{opacity:.85;}
+.ch-tag{
+  display:inline-block;font-family:'DM Mono',monospace;font-size:9px;
+  padding:1px 5px;border-radius:4px;margin-left:2px;
+  vertical-align:middle;position:relative;top:-2px;opacity:.7;
+}
+/* Challenge footer */
+.challenge-footer{
+  padding:16px 26px 22px;
+  border-top:1px solid rgba(255,255,255,.05);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+}
+.ch-score-bar{
+  font-family:'DM Mono',monospace;font-size:12px;color:#64748b;
+}
+.ch-score-val{font-size:18px;font-weight:700;color:#fbbf24;}
+.btn-ch-check{
+  padding:9px 22px;background:#fbbf24;border:none;
+  border-radius:10px;color:#0a0f1e;cursor:pointer;
+  font-size:13px;font-family:'DM Mono',monospace;font-weight:700;
+  transition:opacity .2s;
+}
+.btn-ch-check:disabled{background:#334155;color:#64748b;cursor:not-allowed;}
+.btn-ch-new{
+  padding:9px 18px;background:transparent;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;color:#94a3b8;cursor:pointer;
+  font-size:12px;font-family:'DM Mono',monospace;
+  transition:all .2s;
+}
+.ch-loading{
+  padding:48px 0;text-align:center;
+  font-family:'DM Mono',monospace;font-size:13px;color:#475569;
+}
+.ch-spinner{
+  display:inline-block;width:28px;height:28px;
+  border:3px solid rgba(250,204,21,.15);
+  border-top-color:#fbbf24;border-radius:50%;
+  animation:spin 0.8s linear infinite;
+  margin-bottom:14px;
+}
+
 /* ── FOOTER HINT ────────────────────────────────── */
 .footer-hint{text-align:center;margin-top:32px;color:#1e293b;font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1px;}
 
@@ -267,21 +430,61 @@ button:hover:not(:disabled){opacity:.82;}
       <span class="mono" id="accent-badge" style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#e85d04;">AI-Powered</span>
       <!-- Key status pill — visible only when key is saved -->
       <span class="key-status-pill" id="key-pill" style="display:none;" onclick="showKeyBanner()" title="API key active — click to manage">
-        🔑 <span>API key active</span>
+        API key active
       </span>
     </div>
-    <p class="mono" style="color:#64748b;font-size:12px;">Choose a category → exercises generated by AI every time ✨</p>
+    <p class="mono" style="color:#64748b;font-size:12px;">Choose a category → exercises generated by AI every time</p>
+  </div>
+
+  <!-- GLOBAL STATS DASHBOARD -->
+  <div class="stats-dashboard" id="stats-dashboard" onclick="toggleBreakdown()">
+    <div class="stats-top">
+      <div class="stats-numbers">
+        <div class="stat-block">
+          <span class="stat-val" id="stat-total-pct" style="color:#e2e8f0;">—</span>
+          <span class="stat-lbl">Overall score</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-val" id="stat-correct" style="color:#22c55e;">0</span>
+          <span class="stat-lbl">Correct</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-val" id="stat-wrong" style="color:#ef4444;">0</span>
+          <span class="stat-lbl">Incorrect</span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-val" id="stat-total" style="color:#64748b;">0</span>
+          <span class="stat-lbl">Total done</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+        <svg id="stats-ring" width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="6"/>
+          <circle id="stats-ring-fill" cx="28" cy="28" r="22" fill="none" stroke="#22c55e" stroke-width="6"
+            stroke-dasharray="138.2" stroke-dashoffset="138.2"
+            stroke-linecap="round" transform="rotate(-90 28 28)"
+            style="transition:stroke-dashoffset .7s cubic-bezier(.4,0,.2,1),stroke .4s"/>
+          <text x="28" y="33" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" fill="#f1f5f9" id="stats-ring-text">—</text>
+        </svg>
+        <span class="mono" style="font-size:9px;color:#334155;letter-spacing:1px;">tap to expand</span>
+      </div>
+    </div>
+    <!-- Collapsible per-topic breakdown -->
+    <div class="stats-breakdown" id="stats-breakdown">
+      <div id="breakdown-rows"></div>
+      <button class="stats-reset-btn" onclick="event.stopPropagation();confirmResetStats()">Reset all stats</button>
+    </div>
   </div>
 
   <!-- API KEY BANNER — hidden once key is saved -->
   <div class="apikey-banner" id="apikey-section">
-    <div class="mono" style="font-size:11px;color:#e85d04;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">🔑 Anthropic API Key Required</div>
+    <div class="mono" style="font-size:11px;color:#e85d04;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Anthropic API Key Required</div>
     <p style="color:#94a3b8;font-size:13px;line-height:1.6;">To generate AI exercises you need an Anthropic API key. Get one at <a href="https://console.anthropic.com" target="_blank" style="color:#38bdf8;">console.anthropic.com</a>. Your key is saved only in <strong style="color:#cbd5e1">this browser on this device</strong> — it goes directly to Anthropic, nowhere else.</p>
     <div class="apikey-row">
       <input class="apikey-input" id="apikey-input" type="password" placeholder="sk-ant-…" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter') saveApiKey()">
       <button class="btn-save-key" onclick="saveApiKey()">Save &amp; go ✓</button>
       <button class="btn-clear-key" id="btn-clear-key" onclick="clearApiKey()" style="display:none">Clear key</button>
-      <button class="btn-clear-key" onclick="testApiKey()" title="Send a tiny test request to verify the key works">🧪 Test key</button>
+      <button class="btn-clear-key" onclick="testApiKey()" title="Send a tiny test request to verify the key works">Test key</button>
     </div>
   </div>
 
@@ -289,7 +492,6 @@ button:hover:not(:disabled){opacity:.82;}
   <div class="cat-dropdown-wrap" id="cat-dropdown-wrap">
     <button class="cat-select-btn" id="cat-select-btn" onclick="toggleCatMenu()">
       <span class="cat-left">
-        <span id="cat-sel-icon" style="font-size:15px">📝</span>
         <span id="cat-sel-label" class="mono" style="font-size:12px">Verb Tenses</span>
       </span>
       <span class="cat-arrow">▼</span>
@@ -297,8 +499,14 @@ button:hover:not(:disabled){opacity:.82;}
     <div class="cat-menu" id="cat-menu"></div>
   </div>
 
-  <!-- PILL BAR -->
-  <div class="pill-bar" id="pill-bar" style="display:none;"></div>
+  <!-- SUB-TOPIC DROPDOWN (shown for verbs / conjunctions / phrasal verbs) -->
+  <div class="sub-dropdown-wrap" id="sub-dropdown-wrap" style="display:none;">
+    <button class="sub-select-btn" id="sub-select-btn" onclick="toggleSubMenu()">
+      <span id="sub-sel-label" style="font-family:'DM Mono',monospace;font-size:11px;">Simple Present</span>
+      <span class="sub-arrow">▼</span>
+    </button>
+    <div class="sub-menu" id="sub-menu"></div>
+  </div>
 
   <!-- RULE CARD -->
   <div class="rule-card" id="rule-card"></div>
@@ -310,19 +518,50 @@ button:hover:not(:disabled){opacity:.82;}
   <div class="controls">
     <div style="display:flex;align-items:center;gap:8px;">
       <span class="mono" id="ex-count-label" style="font-size:11px;color:#64748b;letter-spacing:2px;text-transform:uppercase;"></span>
-      <span id="spin-icon" class="spinning" style="font-size:15px;display:none;">⚙️</span>
+      <span id="spin-icon" class="spinning" style="font-size:13px;display:none;">...</span>
     </div>
     <div class="ctrl-btns">
-      <button class="btn-ref-irr" onclick="openModal('irregular')">📋 Irregular verbs</button>
-      <button class="btn-ref-phr" onclick="openModal('phrasal')">🔀 Phrasal verbs</button>
-      <button class="btn-new" id="btn-new" onclick="requestNewExercises()">✨ New AI exercises</button>
+      <button class="btn-ref-irr" onclick="openModal('irregular')">Irregular verbs</button>
+      <button class="btn-ref-phr" onclick="openModal('phrasal')">Phrasal verbs</button>
+      <button class="btn-challenge" id="btn-challenge" onclick="openChallenge()">Challenge myself</button>
+      <button class="btn-new" id="btn-new" onclick="requestNewExercises()">New AI exercises</button>
     </div>
   </div>
 
   <!-- EXERCISES -->
   <div id="exercises-container"></div>
 
-  <div class="footer-hint">Press Enter or click Check &nbsp;·&nbsp; ✨ AI generates fresh exercises every time</div>
+  <div class="footer-hint">Press Enter or click Check · New AI exercises generates a fresh set every time</div>
+</div>
+
+<!-- CHALLENGE OVERLAY -->
+<div class="challenge-overlay" id="challenge-overlay" style="display:none;" onclick="closeChallengeOnOutside(event)">
+  <div class="challenge-box" id="challenge-box">
+    <div class="challenge-header">
+      <div>
+        <div class="challenge-title">Challenge Myself</div>
+        <div class="challenge-subtitle" id="ch-subtitle">Mixed grammar exercise · fill every blank</div>
+      </div>
+      <button class="challenge-close" onclick="closeChallenge()">✕</button>
+    </div>
+    <div class="challenge-body">
+      <div id="ch-content">
+        <div class="ch-loading">
+          <div class="ch-spinner"></div><br>Generating your challenge…
+        </div>
+      </div>
+    </div>
+    <div class="challenge-footer">
+      <div class="ch-score-bar">
+        Score: <span class="ch-score-val" id="ch-score">—</span>
+        <span id="ch-score-total" style="color:#475569;font-size:11px;"></span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-ch-new" onclick="openChallenge()">New challenge</button>
+        <button class="btn-ch-check" id="btn-ch-check" onclick="checkChallenge()" disabled>Check answers</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL -->
@@ -336,7 +575,7 @@ button:hover:not(:disabled){opacity:.82;}
       <button class="btn-close" onclick="document.getElementById('modal').style.display='none'">✕</button>
     </div>
     <div class="modal-search-row">
-      <input class="modal-search" id="modal-search" placeholder="🔍  Search…" oninput="renderModalRows()" autocomplete="off">
+      <input class="modal-search" id="modal-search" placeholder="Search…" oninput="renderModalRows()" autocomplete="off">
     </div>
     <div class="modal-table-head" id="modal-head"></div>
     <div class="modal-body" id="modal-body"></div>
@@ -352,24 +591,24 @@ button:hover:not(:disabled){opacity:.82;}
 // Categories grouped for the dropdown menu
 const CATEGORIES=[
   // ── Verb Tenses ──
-  {id:"verbs",          label:"Verb Tenses",              icon:"📝",accent:"#e85d04",  group:null},
+  {id:"verbs",          label:"Verb Tenses",accent:"#e85d04",  group:null},
   // ── Grammar Topics (all grammar in one group) ──
-  {id:"conjunctions",   label:"Conjunctions",             icon:"🔗",accent:"#8b5cf6",  group:"Grammar Topics"},
-  {id:"possessive",     label:"Possessive Adjectives",    icon:"👤",accent:"#ec4899",  group:null},
-  {id:"plurals",        label:"Plural Nouns",             icon:"📦",accent:"#f59e0b",  group:null},
-  {id:"prepositions",   label:"Prepositions",             icon:"📍",accent:"#10b981",  group:null},
-  {id:"quantifiers",    label:"Quantifiers",              icon:"🔢",accent:"#06b6d4",  group:null},
-  {id:"say_tell",       label:"Say · Tell · Speak",       icon:"💬",accent:"#f43f5e",  group:null},
-  {id:"do_does_did",    label:"Do / Does / Did",          icon:"❓",accent:"#3b82f6",  group:null},
-  {id:"gerund_inf",     label:"Gerund & Infinitive",      icon:"🔄",accent:"#84cc16",  group:null},
-  {id:"used_to",        label:"Used to (Past Habits)",    icon:"🕰️",accent:"#f59e0b",  group:null},
-  {id:"comparatives",   label:"Comparatives & Superlatives",icon:"📊",accent:"#10b981",group:null},
-  {id:"modals",         label:"Should / Must / Might",    icon:"💭",accent:"#8b5cf6",  group:null},
-  {id:"advice_oblig",   label:"Advice vs Obligation",     icon:"⚠️",accent:"#f43f5e",  group:null},
-  {id:"conditionals",   label:"First & Zero Conditionals",icon:"⚡",accent:"#f97316",  group:null},
-  {id:"rel_clauses",    label:"Defining Relative Clauses",icon:"🔍",accent:"#06b6d4",  group:null},
+  {id:"conjunctions",   label:"Conjunctions",accent:"#8b5cf6",  group:"Grammar Topics"},
+  {id:"possessive",     label:"Possessive Adjectives",accent:"#ec4899",  group:null},
+  {id:"plurals",        label:"Plural Nouns",accent:"#f59e0b",  group:null},
+  {id:"prepositions",   label:"Prepositions",accent:"#10b981",  group:null},
+  {id:"quantifiers",    label:"Quantifiers",accent:"#06b6d4",  group:null},
+  {id:"say_tell",       label:"Say · Tell · Speak",accent:"#f43f5e",  group:null},
+  {id:"do_does_did",    label:"Do / Does / Did",accent:"#3b82f6",  group:null},
+  {id:"gerund_inf",     label:"Gerund & Infinitive",accent:"#84cc16",  group:null},
+  {id:"used_to",        label:"Used to (Past Habits)",accent:"#f59e0b",  group:null},
+  {id:"comparatives",   label:"Comparatives & Superlatives",accent:"#10b981",group:null},
+  {id:"modals",         label:"Should / Must / Might",accent:"#8b5cf6",  group:null},
+  {id:"advice_oblig",   label:"Advice vs Obligation",accent:"#f43f5e",  group:null},
+  {id:"conditionals",   label:"First & Zero Conditionals",accent:"#f97316",  group:null},
+  {id:"rel_clauses",    label:"Defining Relative Clauses",accent:"#06b6d4",  group:null},
   // ── Phrasal Verbs ──
-  {id:"phrasal_verbs",  label:"Phrasal Verbs",            icon:"🔀",accent:"#a78bfa",  group:"Phrasal Verbs"},
+  {id:"phrasal_verbs",  label:"Phrasal Verbs",accent:"#a78bfa",  group:"Phrasal Verbs"},
 ];
 const TENSES=[
   // ── Individual tenses ──
@@ -383,10 +622,10 @@ const TENSES=[
   {id:"simple_future",        label:"Simple Future (will)"},
   {id:"future_going_to",      label:"Future (going to)"},
   // ── Contrast topics ──
-  {id:"pp_vs_ps",             label:"Perf. vs Past Simple ⚖️"},
-  {id:"ps_vs_pc",             label:"Simple vs Continuous ⚖️"},
-  {id:"pp_vs_ppc",            label:"Perf. vs Perf. Cont. ⚖️"},
-  {id:"pc_vs_pss",            label:"Past Cont. vs Simple ⚖️"},
+  {id:"pp_vs_ps",             label:"Perf. vs Past Simple"},
+  {id:"ps_vs_pc",             label:"Simple vs Continuous"},
+  {id:"pp_vs_ppc",            label:"Perf. vs Perf. Cont."},
+  {id:"pc_vs_pss",            label:"Past Cont. vs Simple"},
 ];
 const CONJ_TOPICS=[
   {id:"coordinating", label:"Coordinating"},
@@ -567,13 +806,36 @@ const TOPIC_DESCRIPTIONS={
 };
 
 // ══════════════════════════════════════════════════
+//  PERSISTENT STATS — saved to localStorage
+// ══════════════════════════════════════════════════
+const STATS_KEY = 'ep_stats_v1';
+
+function loadStats(){
+  try { return JSON.parse(localStorage.getItem(STATS_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function saveStats(stats){
+  try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); }
+  catch(e){}
+}
+function resetStats(){
+  localStorage.removeItem(STATS_KEY);
+  state.stats = {};
+  renderGlobalStats();
+  renderProgress(getTopicId());
+}
+function confirmResetStats(){
+  if(confirm('Reset ALL progress stats? This cannot be undone.')) resetStats();
+}
+
+// ══════════════════════════════════════════════════
 //  APP STATE
 // ══════════════════════════════════════════════════
 let state={
   category:"verbs", tense:"simple_present",
   conjTopic:"coordinating", phrasalTopic:"pv_daily",
   exercises:[], loading:false, error:null,
-  stats:{}, genKey:0, modalType:null,
+  stats:loadStats(), genKey:0, modalType:null,
 };
 let usedSentences={};
 
@@ -684,36 +946,46 @@ async function generateExercises(topicId){
   const avoidStr=prev.length>0?`\n\nIMPORTANT: Do NOT reuse any of these sentence beginnings: ${prev.join(' | ')}`:'';
   const topic=TOPIC_DESCRIPTIONS[topicId]||'English grammar exercises';
 
-  const prompt=`You are an English language teacher creating fill-in-the-blank exercises for a Spanish speaker learning English.
+  const prompt=`You are a strict English language teacher. Your ONLY job right now is to create fill-in-the-blank exercises for this ONE specific topic:
 
-Topic: ${topic}
+TOPIC: ${topic}
 
-Generate exactly 8 fresh, varied fill-in-the-blank exercises.
+You MUST stay 100% on this topic. Do NOT generate exercises from a different tense or grammar point. Every single exercise must practise exactly this topic and nothing else.
+
+Generate exactly 8 fill-in-the-blank exercises.
 
 STRICT JSON FORMAT — respond with ONLY this JSON, no explanation, no markdown, no code fences:
 {
   "exercises": [
     {
-      "sentence": "She ___ (go) to school every day.",
-      "answer": "goes",
-      "hint": "3rd person singular → add -s."
+      "sentence": "She ___ (study) English for three hours now.",
+      "answer": "has been studying",
+      "hint": "Ongoing action with duration → have/has been + verb-ing."
     }
   ]
 }
 
-Rules:
-- Each sentence must have exactly ONE blank marked as ___
-- The answer must be the complete correct form to fill the blank
-- The hint must explain the grammar rule clearly and concisely
-- Use varied subjects (I, you, he, she, we, they, it, names, nouns)
-- Use everyday, realistic situations (food, travel, work, family, hobbies)
-- Mix positive sentences, negatives, and questions
-- Hints may reference Spanish equivalents where helpful
-- Vary difficulty (easy to medium-hard)
-- Be creative — use different verbs and contexts every time${avoidStr}`;
+SENTENCE RULES — read carefully:
+1. Every sentence must have EXACTLY ONE blank marked as ___.
+2. The blank must represent the COMPLETE verb form the student needs to supply.
+3. NEVER split the answer across the blank and another part of the sentence.
+   BAD:  "Does ___ it rain?" (answer would be split — "Does" is already written)
+   GOOD: "___ it rain in autumn?" (answer is "Does it rain" — wait, still bad)
+   GOOD: "It ___ (rain) a lot in autumn." (answer: "rains" — clean single blank)
+4. For questions, the blank must contain the FULL auxiliary + subject + verb, OR restructure the sentence so the blank is just the verb form:
+   GOOD: "She ___ (study) when I called." (answer: "was studying")
+   GOOD: "___ she studying when you arrived?" (answer: "Was" — but only if full answer fits)
+   BEST approach for questions: use statement form with a question word:
+   "What ___ (he/do) yesterday?" → answer: "did he do"
+5. The hint explains the grammar rule, not just the answer.
+6. Use varied subjects: I, you, he, she, we, they, it, names, nouns.
+7. Use realistic everyday situations.
+8. Mix positive sentences, negatives, and questions — but only use question format if the blank works cleanly (see rule 4).
+9. Hints may reference Spanish equivalents where helpful.
+10. Be creative — use different verbs and contexts every time.${avoidStr}`;
 
   const data = await callAnthropicAPI(apiKey, {
-    model: 'claude-haiku-4-5-20251001',  // fast + cheap model, works perfectly for exercises
+    model: 'claude-sonnet-4-20250514',  // Sonnet follows topic instructions more reliably than Haiku
     max_tokens: 1000,
     messages: [{ role: 'user', content: prompt }],
   });
@@ -738,7 +1010,7 @@ async function testApiKey(){
   console.log('Testing key...');
   try {
     const d = await callAnthropicAPI(key,{
-      model:'claude-haiku-4-5-20251001',
+      model:'claude-sonnet-4-20250514',
       max_tokens:10,
       messages:[{role:'user',content:'Say: OK'}]
     });
@@ -804,7 +1076,6 @@ function renderAll(){
 
   // ── dropdown button ──
   const cat=CATEGORIES.find(c=>c.id===state.category)||CATEGORIES[0];
-  document.getElementById('cat-sel-icon').textContent=cat.icon;
   document.getElementById('cat-sel-label').textContent=cat.label;
   const btn=document.getElementById('cat-select-btn');
   btn.style.borderColor=accent;
@@ -821,35 +1092,48 @@ function renderAll(){
     menuHTML+=`<button class="cat-menu-item${isActive?' active':''}" onclick="selectCategory('${c.id}')"
       style="${isActive?`background:${c.accent}22;color:#fff;`:''}">
       <span class="cat-dot" style="background:${isActive?c.accent:'#334155'}"></span>
-      <span style="font-size:13px">${c.icon}</span>${c.label}
+${c.label}
     </button>`;
   });
   document.getElementById('cat-menu').innerHTML=menuHTML;
 
-  // pill bar
-  const pillEl=document.getElementById('pill-bar');
-  let pillItems=null;
-  // "verbs" category shows the tense pill bar (including contrast topics)
-  if(state.category==='verbs') pillItems=TENSES;
-  else if(state.category==='conjunctions') pillItems=CONJ_TOPICS;
-  else if(state.category==='phrasal_verbs') pillItems=PHRASAL_TOPICS;
+  // sub-topic dropdown
+  const subWrap=document.getElementById('sub-dropdown-wrap');
+  let subItems=null;
+  let activeSubId=null;
+  if(state.category==='verbs'){ subItems=TENSES; activeSubId=state.tense; }
+  else if(state.category==='conjunctions'){ subItems=CONJ_TOPICS; activeSubId=state.conjTopic; }
+  else if(state.category==='phrasal_verbs'){ subItems=PHRASAL_TOPICS; activeSubId=state.phrasalTopic; }
 
-  if(pillItems){
-    pillEl.style.display='flex';
-    pillEl.innerHTML=pillItems.map(t=>{
-      const tid=t.id;
-      const isActive=(state.category==='verbs'?state.tense:state.category==='conjunctions'?state.conjTopic:state.phrasalTopic)===tid;
-      const s=state.stats[tid]||{correct:0,total:0};
+  if(subItems){
+    subWrap.style.display='block';
+    const activeItem=subItems.find(t=>t.id===activeSubId)||subItems[0];
+    // Update button label
+    document.getElementById('sub-sel-label').textContent=activeItem.label;
+    document.getElementById('sub-select-btn').style.borderColor=accent;
+    // Build menu items — add group separators for TENSES
+    let menuHTML='';
+    const isVerbs=state.category==='verbs';
+    if(isVerbs){
+      menuHTML+='<div style="padding:4px 12px 2px;font-size:9px;color:#475569;font-family:DM Mono,monospace;letter-spacing:2px;text-transform:uppercase;">Individual Tenses</div>';
+    }
+    subItems.forEach((t,idx)=>{
+      if(isVerbs && idx===9){
+        menuHTML+='<div class="sub-menu-sep"></div><div style="padding:4px 12px 2px;font-size:9px;color:#475569;font-family:DM Mono,monospace;letter-spacing:2px;text-transform:uppercase;">Contrast Exercises</div>';
+      }
+      const isActive=t.id===activeSubId;
+      const s=state.stats[t.id]||{correct:0,total:0};
       const pct=s.total===0?null:Math.round(s.correct/s.total*100);
-      const dotColor=pct===null?null:pct>=80?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
-      return `<button class="pill-btn${isActive?' active':''}" onclick="selectSubTopic('${tid}')"
-        style="border-color:${isActive?accent:'#334155'};background:${isActive?accent:'transparent'};color:${isActive?'#fff':'#94a3b8'};">
-        ${t.label}${dotColor?`<span class="dot-badge" style="background:${dotColor}"></span>`:''}
+      const pctColor=pct===null?'#334155':pct>=80?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
+      const pctBadge=pct===null?'':`<span class="sub-pct-badge" style="color:${pctColor};background:${pctColor}18;">${pct}%</span>`;
+      menuHTML+=`<button class="sub-menu-item${isActive?' active':''}" onclick="selectSubTopic('${t.id}')"
+        style="${isActive?`background:${accent}22;color:#fff;`:''}">
+        <span>${t.label}</span>${pctBadge}
       </button>`;
-    }).join('');
+    });
+    document.getElementById('sub-menu').innerHTML=menuHTML;
   } else {
-    pillEl.style.display='none';
-    pillEl.innerHTML='';
+    subWrap.style.display='none';
   }
 
   // rule card
@@ -863,8 +1147,9 @@ function renderAll(){
     </div>
     <p style="color:#cbd5e1;font-size:14px;line-height:1.7;">${expl}</p>`;
 
-  // progress
+  // progress (topic + global)
   renderProgress(topicId);
+  renderGlobalStats();
 
   // controls
   const label=document.getElementById('ex-count-label');
@@ -874,16 +1159,98 @@ function renderAll(){
     label.textContent='Generating…';
     spin.style.display='inline-block';
     btnNew.disabled=true;
-    btnNew.textContent='⏳ Generating…';
+    btnNew.textContent='Generating…';
   } else {
     label.textContent=`Exercises · ${state.exercises.length}`;
     spin.style.display='none';
     btnNew.disabled=false;
-    btnNew.textContent='✨ New AI exercises';
+    btnNew.textContent='New AI exercises';
   }
 
   // exercises
   renderExercises();
+}
+
+// ══════════════════════════════════════════════════
+//  GLOBAL STATS RENDER
+// ══════════════════════════════════════════════════
+// All topics we track (verbs pill ids + category ids)
+function getAllTopicEntries(){
+  // Build a flat list of {id, label, group}
+  const entries=[];
+  // Verb tenses + contrasts
+  TENSES.forEach(t=>entries.push({id:t.id,label:t.label,group:'Verb Tenses'}));
+  // Conjunction sub-topics
+  CONJ_TOPICS.forEach(t=>entries.push({id:t.id,label:t.label,group:'Conjunctions'}));
+  // Phrasal verb sub-topics
+  PHRASAL_TOPICS.forEach(t=>entries.push({id:t.id,label:t.label,group:'Phrasal Verbs'}));
+  // Flat grammar categories
+  CATEGORIES.filter(c=>!['verbs','conjunctions','phrasal_verbs'].includes(c.id))
+    .forEach(c=>entries.push({id:c.id,label:c.label,group:'Grammar Topics'}));
+  return entries;
+}
+
+function renderGlobalStats(){
+  const entries = getAllTopicEntries();
+  let totalCorrect=0, totalDone=0;
+  entries.forEach(e=>{
+    const s=state.stats[e.id]||{correct:0,total:0};
+    totalCorrect+=s.correct;
+    totalDone+=s.total;
+  });
+  const totalWrong=totalDone-totalCorrect;
+  const pct=totalDone===0?null:Math.round(totalCorrect/totalDone*100);
+  const ringColor=pct===null?'#334155':pct>=80?'#22c55e':pct>=60?'#f59e0b':pct>=40?'#f97316':'#ef4444';
+  const circumference=138.2;
+  const offset=pct===null?circumference:circumference*(1-pct/100);
+
+  document.getElementById('stat-total-pct').textContent = pct===null ? '—' : pct+'%';
+  document.getElementById('stat-total-pct').style.color  = ringColor;
+  document.getElementById('stat-correct').textContent   = totalCorrect;
+  document.getElementById('stat-wrong').textContent     = totalWrong;
+  document.getElementById('stat-total').textContent     = totalDone;
+  document.getElementById('stats-ring-fill').style.stroke = ringColor;
+  document.getElementById('stats-ring-fill').style.strokeDashoffset = offset;
+  document.getElementById('stats-ring-text').textContent = pct===null ? '—' : pct+'%';
+
+  // Breakdown rows — only topics with at least 1 answer
+  const active=entries.filter(e=>(state.stats[e.id]||{total:0}).total>0);
+
+  // Group them
+  const groups={};
+  active.forEach(e=>{
+    if(!groups[e.group]) groups[e.group]=[];
+    groups[e.group].push(e);
+  });
+
+  let html='';
+  Object.entries(groups).forEach(([grp,items])=>{
+    html+=`<div style="font-family:'DM Mono',monospace;font-size:9px;color:#334155;letter-spacing:2px;text-transform:uppercase;padding:10px 0 4px;">${grp}</div>`;
+    items.forEach(e=>{
+      const s=state.stats[e.id]||{correct:0,total:0};
+      const p=Math.round(s.correct/s.total*100);
+      const bc=p>=80?'#22c55e':p>=60?'#f59e0b':p>=40?'#f97316':'#ef4444';
+      html+=`<div class="breakdown-row">
+        <span class="breakdown-label">${e.label.replace(/\p{Emoji_Presentation}/gu,'').replace(/[⚖⚡⚠]/g,'').trim()}</span>
+        <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${p}%;background:${bc}"></div></div>
+        <span class="breakdown-pct" style="color:${bc}">${p}%</span>
+      </div>`;
+    });
+  });
+
+  if(!html) html='<div style="padding:12px 0;font-family:DM Mono,monospace;font-size:12px;color:#334155;text-align:center;">No exercises completed yet. Start practising!</div>';
+  document.getElementById('breakdown-rows').innerHTML=html;
+}
+
+function toggleBreakdown(){
+  const bd=document.getElementById('stats-breakdown');
+  bd.classList.toggle('open');
+  const hint=document.querySelector('.stats-dashboard .mono:last-of-type');
+  // update tap hint text
+  const isOpen=bd.classList.contains('open');
+  document.querySelectorAll('.stats-dashboard .mono').forEach(el=>{
+    if(el.textContent.includes('tap')) el.textContent=isOpen?'tap to collapse':'tap to expand';
+  });
 }
 
 function renderProgress(topicId){
@@ -891,11 +1258,17 @@ function renderProgress(topicId){
   const pct=s.total===0?0:Math.round(s.correct/s.total*100);
   const color=pct>=80?'#22c55e':pct>=50?'#f59e0b':pct>0?'#ef4444':'#1e293b';
   const label=pct>=80?'Excellent! 🏆':pct>=50?'Good progress 👍':pct>0?'Keep practicing 💪':'Not started yet';
-  const dots=s.total>0?`<div class="progress-dots">${Array.from({length:s.total}).map((_,i)=>`<div class="progress-dot" style="background:${i<s.correct?'#22c55e':'#ef4444'}"></div>`).join('')}</div>`:'';
+  // Only show last 40 dots to avoid overflow
+  const dotCount=Math.min(s.total,40);
+  const dotStart=Math.max(0,s.total-40);
+  const dots=s.total>0?`<div class="progress-dots">${Array.from({length:dotCount}).map((_,i)=>{
+    const idx=dotStart+i;
+    return `<div class="progress-dot" style="background:${idx<s.correct?'#22c55e':'#ef4444'}"></div>`;
+  }).join('')}</div>`:'';
   document.getElementById('progress-box').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
       <div style="display:flex;align-items:center;gap:8px;">
-        <span class="mono" style="font-size:10px;color:#64748b;letter-spacing:2px;text-transform:uppercase;">Your Progress</span>
+        <span class="mono" style="font-size:10px;color:#64748b;letter-spacing:2px;text-transform:uppercase;">This Topic</span>
         <span class="mono" style="font-size:11px;color:${color}">${label}</span>
       </div>
       <span class="mono" style="font-size:12px;color:${pct>0?color:'#334155'}">${s.correct}/${s.total} · <strong>${pct}%</strong></span>
@@ -924,7 +1297,7 @@ function renderExercises(){
     c.innerHTML=`<div class="error-box">
       <div style="color:#fca5a5;font-size:13px;line-height:1.7;font-family:'DM Mono',monospace;word-break:break-word;">${state.error}</div>
       <div style="margin-top:10px;font-size:11px;color:#64748b;font-family:'DM Mono',monospace;">
-        💡 Tip: click <strong style="color:#94a3b8">🧪 Test key</strong> in the banner above to check your key is valid.
+        Tip: click <strong style="color:#94a3b8">Test key</strong> in the banner above to check your key is valid.
       </div>
       <button class="btn-retry" onclick="requestNewExercises()">Try again</button>
     </div>`;
@@ -944,13 +1317,13 @@ function buildExerciseHTML(ex,i,submitted,correct){
   const inputDisabled=submitted!==undefined?'disabled':'';
   const btnOrIcon=submitted===undefined
     ?`<button class="btn-check" onclick="submitExercise(${i})">Check</button>`
-    :`<span class="ex-icon">${correct?'✅':'❌'}</span>`;
+    :`<span class="ex-icon" style="font-size:14px;font-family:DM Mono,monospace;font-weight:500;">${correct?'OK':'✗'}</span>`;
   const feedback=submitted!==undefined&&!correct?`
     <div class="ex-feedback">
-      <div class="f-answer">✏️ Correct answer: <strong style="color:#fde68a">${esc(ex.answer)}</strong></div>
-      <div class="f-hint">💡 ${esc(ex.hint)}</div>
+      <div class="f-answer">Correct answer: <strong style="color:#fde68a">${esc(ex.answer)}</strong></div>
+      <div class="f-hint">${esc(ex.hint)}</div>
     </div>`:
-    submitted!==undefined&&correct?`<div class="ex-success">✨ Perfect! Well done.</div>`:'';
+    submitted!==undefined&&correct?`<div class="ex-success">Perfect! Well done.</div>`:'';
   const savedVal=submittedAnswers[i]?.value||'';
   return `<div class="ex-card${statusClass?' '+statusClass:''}" id="ex-card-${i}">
     <div class="ex-row">
@@ -977,33 +1350,21 @@ function submitExercise(i){
   const ok=checkAnswer(val,ex.answer);
   submittedAnswers[i]={value:val,correct:ok};
 
-  // Update stats
+  // Update stats (session + persistent)
   const tid=getTopicId();
   const cur=state.stats[tid]||{correct:0,total:0};
   state.stats[tid]={correct:cur.correct+(ok?1:0),total:cur.total+1};
+  saveStats(state.stats);
 
   // Re-render this card in place
   const card=document.getElementById('ex-card-'+i);
   if(card) card.outerHTML=buildExerciseHTML(ex,i,true,ok);
 
   renderProgress(tid);
-  // Refresh pill dots
-  const pillEl=document.getElementById('pill-bar');
-  if(pillEl.style.display!=='none'){
-    // just update dots — re-render pills
-    const accent=getAccent();
-    let pillItems=state.category==='verbs'?TENSES:state.category==='conjunctions'?CONJ_TOPICS:PHRASAL_TOPICS;
-    pillEl.innerHTML=pillItems.map(t=>{
-      const isActive=(state.category==='verbs'?state.tense:state.category==='conjunctions'?state.conjTopic:state.phrasalTopic)===t.id;
-      const s=state.stats[t.id]||{correct:0,total:0};
-      const pct=s.total===0?null:Math.round(s.correct/s.total*100);
-      const dotColor=pct===null?null:pct>=80?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
-      return `<button class="pill-btn${isActive?' active':''}" onclick="selectSubTopic('${t.id}')"
-        style="border-color:${isActive?accent:'#334155'};background:${isActive?accent:'transparent'};color:${isActive?'#fff':'#94a3b8'};">
-        ${t.label}${dotColor?`<span class="dot-badge" style="background:${dotColor}"></span>`:''}
-      </button>`;
-    }).join('');
-  }
+  renderGlobalStats();
+  // Refresh sub-dropdown % badges
+  const subWrap2=document.getElementById('sub-dropdown-wrap');
+  if(subWrap2&&subWrap2.style.display!=='none') renderSubDropdown();
 }
 
 // ══════════════════════════════════════════════════
@@ -1022,24 +1383,80 @@ function selectSubTopic(id){
   if(state.category==='verbs') state.tense=id;
   else if(state.category==='conjunctions') state.conjTopic=id;
   else if(state.category==='phrasal_verbs') state.phrasalTopic=id;
+  // Close the sub-menu
+  document.getElementById('sub-menu').classList.remove('open');
+  const subBtn=document.getElementById('sub-select-btn');
+  if(subBtn) subBtn.classList.remove('open');
   renderAll();
   requestNewExercises();
 }
 
-// ── Dropdown toggle + close on outside click ──
+// ── Category dropdown toggle ──
 function toggleCatMenu(){
   const menu=document.getElementById('cat-menu');
   const btn=document.getElementById('cat-select-btn');
   const open=menu.classList.toggle('open');
   btn.classList.toggle('open',open);
+  // Close sub menu if open
+  document.getElementById('sub-menu').classList.remove('open');
+  document.getElementById('sub-select-btn').classList.remove('open');
 }
+
+// ── Sub-topic dropdown toggle ──
+function toggleSubMenu(){
+  const menu=document.getElementById('sub-menu');
+  const btn=document.getElementById('sub-select-btn');
+  const open=menu.classList.toggle('open');
+  btn.classList.toggle('open',open);
+  // Close cat menu if open
+  document.getElementById('cat-menu').classList.remove('open');
+  document.getElementById('cat-select-btn').classList.remove('open');
+}
+
+// ── Close both dropdowns on outside click ──
 document.addEventListener('click',function(e){
-  const wrap=document.getElementById('cat-dropdown-wrap');
-  if(wrap && !wrap.contains(e.target)){
+  const catWrap=document.getElementById('cat-dropdown-wrap');
+  if(catWrap && !catWrap.contains(e.target)){
     document.getElementById('cat-menu').classList.remove('open');
     document.getElementById('cat-select-btn').classList.remove('open');
   }
+  const subWrap=document.getElementById('sub-dropdown-wrap');
+  if(subWrap && !subWrap.contains(e.target)){
+    document.getElementById('sub-menu').classList.remove('open');
+    const subBtn=document.getElementById('sub-select-btn');
+    if(subBtn) subBtn.classList.remove('open');
+  }
 });
+
+// ── Lightweight sub-dropdown refresh (just update % badges) ──
+function renderSubDropdown(){
+  // Re-run the sub-dropdown portion of renderAll
+  const accent=getAccent();
+  let subItems=null;
+  let activeSubId=null;
+  if(state.category==='verbs'){ subItems=TENSES; activeSubId=state.tense; }
+  else if(state.category==='conjunctions'){ subItems=CONJ_TOPICS; activeSubId=state.conjTopic; }
+  else if(state.category==='phrasal_verbs'){ subItems=PHRASAL_TOPICS; activeSubId=state.phrasalTopic; }
+  if(!subItems) return;
+  const isVerbs=state.category==='verbs';
+  let menuHTML='';
+  if(isVerbs) menuHTML+='<div style="padding:4px 12px 2px;font-size:9px;color:#475569;font-family:DM Mono,monospace;letter-spacing:2px;text-transform:uppercase;">Individual Tenses</div>';
+  subItems.forEach((t,idx)=>{
+    if(isVerbs && idx===9){
+      menuHTML+='<div class="sub-menu-sep"></div><div style="padding:4px 12px 2px;font-size:9px;color:#475569;font-family:DM Mono,monospace;letter-spacing:2px;text-transform:uppercase;">Contrast Exercises</div>';
+    }
+    const isActive=t.id===activeSubId;
+    const s=state.stats[t.id]||{correct:0,total:0};
+    const pct=s.total===0?null:Math.round(s.correct/s.total*100);
+    const pctColor=pct===null?'#334155':pct>=80?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
+    const pctBadge=pct===null?'':`<span class="sub-pct-badge" style="color:${pctColor};background:${pctColor}18;">${pct}%</span>`;
+    menuHTML+=`<button class="sub-menu-item${isActive?' active':''}" onclick="selectSubTopic('${t.id}')"
+      style="${isActive?`background:${accent}22;color:#fff;`:''}">
+      <span>${t.label}</span>${pctBadge}
+    </button>`;
+  });
+  document.getElementById('sub-menu').innerHTML=menuHTML;
+}
 
 // ══════════════════════════════════════════════════
 //  MODAL
@@ -1085,10 +1502,217 @@ function renderModalRows(){
 }
 
 // ══════════════════════════════════════════════════
+//  CHALLENGE MODE
+// ══════════════════════════════════════════════════
+let challengeItems=[];   // [{answer, hint, topic, topicLabel}]
+let challengeChecked=false;
+
+function openChallenge(){
+  challengeChecked=false;
+  challengeItems=[];
+  const overlay=document.getElementById('challenge-overlay');
+  overlay.style.display='flex';
+  overlay.scrollTop=0;
+  document.getElementById('ch-content').innerHTML='<div class="ch-loading"><div class="ch-spinner"></div><br>Generating your challenge…</div>';
+  document.getElementById('ch-score').textContent='—';
+  document.getElementById('ch-score-total').textContent='';
+  document.getElementById('btn-ch-check').disabled=true;
+  document.getElementById('btn-challenge').disabled=true;
+  generateChallenge();
+}
+
+function closeChallenge(){
+  document.getElementById('challenge-overlay').style.display='none';
+  document.getElementById('btn-challenge').disabled=false;
+}
+
+function closeChallengeOnOutside(e){
+  if(e.target===document.getElementById('challenge-overlay')) closeChallenge();
+}
+
+async function generateChallenge(){
+  const apiKey=getApiKey();
+  if(!apiKey){
+    document.getElementById('ch-content').innerHTML='<div style="padding:32px;text-align:center;font-family:DM Mono,monospace;font-size:13px;color:#fca5a5;">Please save your API key first.</div>';
+    return;
+  }
+
+  // Build a rich description of ALL available topics for the AI
+  const allTopics=[
+    'Simple Present','Present Continuous','Simple Past','Past Continuous',
+    'Present Perfect','Present Perfect Continuous','Past Perfect',
+    'Simple Future (will)','Future (going to)',
+    'Present Perfect vs Past Simple contrast','Present Simple vs Continuous contrast',
+    'Coordinating conjunctions (FANBOYS)','Subordinating conjunctions','Correlative conjunctions',
+    'Possessive adjectives (my/your/his/her/its/our/their)',
+    'Plural nouns (regular and irregular)',
+    'Prepositions of time, place and movement',
+    'Quantifiers (many/much/few/little/some/any/a lot of)',
+    'Say vs Tell vs Speak','Do/Does/Did auxiliary verbs',
+    'Gerund vs Infinitive','Used to (past habits)',
+    'Comparatives and Superlatives','Should/Must/Might modals',
+    "Advice vs Obligation (should/must/have to, mustn't, don't have to)",
+    'First and Zero Conditionals','Defining Relative Clauses (who/which/that/where/whose)',
+    'Phrasal verbs (common ones from daily life, work, relationships)'
+  ];
+
+  const challengePrompt=`You are an expert English teacher creating a mixed grammar challenge for a Spanish-speaking learner.
+
+Write a SINGLE coherent passage of 15 to 18 sentences about an interesting everyday story or situation (e.g. a trip, a day at work, a childhood memory, meeting someone, a news event). The story must flow naturally and make sense as a connected narrative.
+
+Within the passage, create fill-in-the-blank gaps that test a WIDE VARIETY of grammar points. You MUST cover at least 10 different grammar topics from this list:
+${allTopics.join(', ')}.
+
+CRITICAL RULES for blanks:
+1. Mark each blank as ___ in the sentence.
+2. The blank must represent the COMPLETE answer — never write part of the answer outside the blank.
+   WRONG: "Does ___ rain?" (answer would be split)
+   RIGHT: "It ___ (rain) a lot in autumn." → answer: "rains"
+3. For verb tenses, include the base verb in parentheses after the blank: She ___ (go).
+4. For grammar choices (conjunctions, prepositions, etc.) do NOT include a hint word — just: "I stayed home ___ I was tired."
+5. Each blank must have one clear, unambiguous correct answer.
+6. Distribute the blanks naturally throughout the passage — do not cluster them all together.
+
+Respond with ONLY this JSON, no explanation, no markdown, no code fences:
+{
+  "title": "Short evocative title for the story",
+  "items": [
+    {
+      "text_before": "She",
+      "text_after": "(go) to school every day.",
+      "answer": "goes",
+      "hint": "3rd person singular → add -s.",
+      "topic": "Simple Present"
+    }
+  ]
+}
+
+The "text_before" is everything in that sentence BEFORE the blank (may be empty string "").
+The "text_after" is everything AFTER the blank (may be empty string "").
+Each item is one blank. The full sentence is: text_before + ___ + text_after.
+There must be 15 to 18 items total, one blank per sentence.`;
+
+  try {
+    const data=await callAnthropicAPI(apiKey,{
+      model:'claude-sonnet-4-20250514',
+      max_tokens:2500,
+      messages:[{role:'user',content:challengePrompt}],
+    });
+    const raw=data.content.map(b=>b.text||'').join('').trim();
+    const cleaned=raw.replace(/```json/gi,'').replace(/```/gi,'').trim();
+    const parsed=JSON.parse(cleaned);
+    if(!parsed.items||!Array.isArray(parsed.items)) throw new Error('Invalid format');
+
+    challengeItems=parsed.items.map(it=>({
+      text_before: it.text_before||'',
+      text_after:  it.text_after||'',
+      answer:      it.answer||'',
+      hint:        it.hint||'',
+      topic:       it.topic||'',
+    }));
+
+    renderChallenge(parsed.title||'Mixed Challenge');
+  } catch(err){
+    document.getElementById('ch-content').innerHTML=`<div style="padding:32px;text-align:center;font-family:DM Mono,monospace;font-size:13px;color:#fca5a5;">Error generating challenge: ${err.message}<br><br><button onclick="generateChallenge()" style="padding:8px 18px;background:#e85d04;border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:DM Mono,monospace;font-size:12px;">Try again</button></div>`;
+    document.getElementById('btn-challenge').disabled=false;
+  }
+}
+
+function renderChallenge(title){
+  document.getElementById('ch-subtitle').textContent=`${challengeItems.length} blanks · mixed grammar · fill every blank`;
+
+  // Build the passage as a series of sentence lines
+  let html='<div class="challenge-passage">';
+  challengeItems.forEach((it,i)=>{
+    const topicColor=getTopicColor(it.topic);
+    html+=`<span>${esc(it.text_before)}</span>`;
+    html+=`<input class="ch-input" id="ch-inp-${i}" placeholder="…" autocomplete="off"
+      onkeydown="if(event.key==='Enter'){event.preventDefault();focusNext(${i});}">`;
+    if(it.text_after) html+=`<span>${esc(it.text_after)}</span>`;
+    html+=` <span class="ch-tag" style="background:${topicColor}18;color:${topicColor};">${esc(it.topic)}</span> `;
+  });
+  html+='</div>';
+
+  document.getElementById('ch-content').innerHTML=html;
+  document.getElementById('btn-ch-check').disabled=false;
+  document.getElementById('btn-challenge').disabled=false;
+
+  // Focus first input
+  setTimeout(()=>{
+    const first=document.getElementById('ch-inp-0');
+    if(first) first.focus();
+  },100);
+}
+
+function focusNext(i){
+  const next=document.getElementById('ch-inp-'+(i+1));
+  if(next) next.focus();
+  else checkChallenge();
+}
+
+function checkChallenge(){
+  if(challengeChecked) return;
+  challengeChecked=true;
+  let correct=0;
+  const STATS_KEY_CH='challenge';
+
+  challengeItems.forEach((it,i)=>{
+    const input=document.getElementById('ch-inp-'+i);
+    if(!input) return;
+    input.disabled=true;
+    const ok=checkAnswer(input.value, it.answer);
+    if(ok){ correct++; input.classList.add('ch-correct'); }
+    else {
+      input.classList.add('ch-wrong');
+      // Show correct answer inline below
+      const tip=document.createElement('span');
+      tip.style.cssText='font-family:DM Mono,monospace;font-size:10px;color:#fca5a5;margin-left:4px;white-space:nowrap;';
+      tip.textContent='→ '+it.answer;
+      input.parentNode.insertBefore(tip, input.nextSibling);
+    }
+  });
+
+  const total=challengeItems.length;
+  const pct=Math.round(correct/total*100);
+  const color=pct>=80?'#22c55e':pct>=60?'#f59e0b':pct>=40?'#f97316':'#ef4444';
+  document.getElementById('ch-score').style.color=color;
+  document.getElementById('ch-score').textContent=pct+'%';
+  document.getElementById('ch-score-total').textContent=' ('+correct+'/'+total+')';
+  document.getElementById('btn-ch-check').disabled=true;
+
+  // Save to persistent stats under a special 'challenge' key
+  const cur=state.stats[STATS_KEY_CH]||{correct:0,total:0};
+  state.stats[STATS_KEY_CH]={correct:cur.correct+correct, total:cur.total+total};
+  saveStats(state.stats);
+  renderGlobalStats();
+}
+
+// Map topic label to an accent colour
+function getTopicColor(topic){
+  const t=(topic||'').toLowerCase();
+  if(t.includes('present') || t.includes('past') || t.includes('future') || t.includes('tense') || t.includes('perfect') || t.includes('continuous')) return '#e85d04';
+  if(t.includes('conjunction')) return '#8b5cf6';
+  if(t.includes('phrasal')) return '#a78bfa';
+  if(t.includes('preposition')) return '#10b981';
+  if(t.includes('modal') || t.includes('should') || t.includes('must') || t.includes('might')) return '#8b5cf6';
+  if(t.includes('conditional')) return '#f97316';
+  if(t.includes('relative')) return '#06b6d4';
+  if(t.includes('quantifier')) return '#06b6d4';
+  if(t.includes('gerund') || t.includes('infinitive')) return '#84cc16';
+  if(t.includes('possessive')) return '#ec4899';
+  if(t.includes('plural')) return '#f59e0b';
+  if(t.includes('used to')) return '#f59e0b';
+  if(t.includes('comparative') || t.includes('superlative')) return '#10b981';
+  if(t.includes('say') || t.includes('tell') || t.includes('speak')) return '#f43f5e';
+  return '#64748b';
+}
+
+// ══════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════
 refreshKeyUI();
 renderAll();
+renderGlobalStats();
 if(getApiKey()) requestNewExercises();
 </script>
 </body>
